@@ -2,15 +2,15 @@
  * @Author: AK-12
  * @Date: 2018-12-29 18:41:28
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-29 18:53:34
+ * @Last Modified time: 2018-12-29 20:18:21
  */
 import { Observable } from './Observable'
 /**
  * MatTransform
- * @param lab
+ * @param mat
  */
-export let MatTransform = <T>(lab: T[][]) =>
-  lab[0].map((col, i) => lab.map(row => row[i]))
+export let MatTransform = <T>(mat: T[][]) =>
+  mat[0].map((col, i) => mat.map(row => row[i]))
 /**
  * MatFill
  * @param value
@@ -23,9 +23,27 @@ export let MatFill = <T>(value: T, x: number, y: number = x) =>
     .map(() => Array<T>(x).fill(value))
 /**
  * MatClone
- * @param lab
+ * @param mat
  */
-export let MatClone = <T>(lab: T[][]): T[][] => lab.map(raw => [...raw])
+export let MatClone = <T>(mat: T[][]): T[][] => mat.map(raw => [...raw])
+/**
+ * MatSet
+ * @param mat
+ * @param value
+ * @param raw
+ * @param col
+ */
+export let MatSet = <T>(
+  mat: T[][],
+  value: T,
+  vec: {
+    raw: number
+    col: number
+  }
+): T[][] => {
+  mat[vec.raw][vec.col] = value
+  return mat
+}
 /**
  * Mat
  *
@@ -53,7 +71,7 @@ export class Mat<T> extends Observable<T[][]> {
    * @param rows - number
    */
   constructor(value: T, cols: number, rows: number)
-  constructor(value?: any, cols?: any, rows?: any) {
+  constructor(value?, cols?, rows?) {
     if (Array.isArray(value)) {
       super(MatClone(value))
       return this
@@ -65,40 +83,49 @@ export class Mat<T> extends Observable<T[][]> {
     return this
   }
   /**
-   * at
-   * @param v raw || col
+   * raws
+   *
+   * @readonly
+   * @type {number}
+   * @memberof Mat
    */
-  public at(v: number)
+  get raws(): number {
+    return this.state.length
+  }
+  /**
+   * cols
+   *
+   * @readonly
+   * @type {number}
+   * @memberof Mat
+   */
+  get cols(): number {
+    return this.state[0].length
+  }
   /**
    * at
-   * @param v raw
-   * @param value col
+   * @param raw col = raw
    */
-  public at(v: number, value: number)
+  public at(raw: number): T
   /**
    * at
-   * @param v - {raw, col}
+   * @param raw
+   * @param col
    */
-  public at(v: { raw: number; col: number }): T
-  /**
-   * at
-   * @param v - {raw, col}
-   * @param value - T
-   */
-  public at(v: { raw: number; col: number }, value?: T): T
-  public at(v, value?) {
-    if (typeof v === 'number') {
-      if (typeof value === 'undefined') {
-        return this.state[v][v]
-      }
-      return this.state[v][value]
-    } else if (typeof v === 'object') {
-      if (typeof value !== 'undefined') {
-        this.state[v.raw][v.col] = value
-        return this.state[v.raw][v.col]
-      }
-      return this.state[v.raw][v.col]
+  public at(raw: number, col: number): T
+  public at(raw?, col?): any {
+    if (typeof col !== 'undefined') {
+      return this.state[raw][col]
     }
-    return this.state[v.raw][v.col]
+    return this.state[raw][raw]
+  }
+  /**
+   * pull
+   *
+   * @returns {T[][]}
+   * @memberof Mat
+   */
+  public pull(): T[][] {
+    return MatClone(this.state)
   }
 }

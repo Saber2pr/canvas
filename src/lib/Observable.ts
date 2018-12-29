@@ -1,3 +1,9 @@
+/*
+ * @Author: AK-12
+ * @Date: 2018-12-29 18:55:04
+ * @Last Modified by: AK-12
+ * @Last Modified time: 2018-12-29 20:43:30
+ */
 /**
  * compose
  *
@@ -29,6 +35,19 @@ export function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
 }
 /**
+ * Observer
+ *
+ * @export
+ * @interface Observer
+ * @template T
+ */
+export interface Observer<T> {
+  (state: T): void
+}
+export interface UnSubscribe<T> {
+  (): Observer<T>[]
+}
+/**
  * Observable
  *
  * @export
@@ -43,17 +62,21 @@ export class Observable<T = any> {
    */
   constructor(state: T) {
     this.state = state
+    this.observers = new Array<Observer<T>>()
   }
   protected state: T
+  private observers: Array<Observer<T>>
   /**
-   * compose
+   * subscribe
    *
-   * @param {...Array<(...args: T[]) => T>} funcs
+   * @param {Observer<T>} observer
+   * @returns {UnSubscribe<T>}
    * @memberof Observable
    */
-  public compose(...funcs: Array<(...args: T[]) => T>) {
-    this.state = compose(...funcs)(this.state)
-    return this
+  public subscribe(observer: Observer<T>): UnSubscribe<T> {
+    this.observers.push(observer)
+    return () =>
+      (this.observers = this.observers.filter(obser => obser !== observer))
   }
   /**
    * pipe
@@ -62,7 +85,10 @@ export class Observable<T = any> {
    * @memberof Observable
    */
   public pipe(...funcs: Array<(...args: T[]) => T>) {
-    this.state = compose(...funcs.reverse())(this.state)
+    !(async () => compose(...funcs.reverse())(this.state))().then(state => {
+      this.state = state
+      this.observers.forEach(observer => observer(this.state))
+    })
     return this
   }
   /**
@@ -72,8 +98,7 @@ export class Observable<T = any> {
    * @memberof Observable
    */
   public push(state: T) {
-    this.state = clone(state)
-    return this
+    return this.pipe(() => clone(state))
   }
   /**
    * pull
