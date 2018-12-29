@@ -1,10 +1,9 @@
-import { labTransform } from './lab'
-
+import { MatTransform } from './Mat'
 /*
  * @Author: AK-12
  * @Date: 2018-12-27 22:36:53
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-28 21:27:54
+ * @Last Modified time: 2018-12-29 18:54:43
  */
 /**
  * Method
@@ -117,17 +116,17 @@ export let merge: ILabMerge = (lab, method) => {
     case 'right':
       return mergeSuper(lab, mergeRight)
     case 'up':
-      let res_up = mergeSuper(labTransform(lab), mergeLeft)
+      let res_up = mergeSuper(MatTransform(lab), mergeLeft)
       return {
-        map: labTransform(res_up.map),
-        delta: labTransform(res_up.delta),
+        map: MatTransform(res_up.map),
+        delta: MatTransform(res_up.delta),
         score: res_up.score
       }
     case 'down':
-      let res_down = mergeSuper(labTransform(lab), mergeRight)
+      let res_down = mergeSuper(MatTransform(lab), mergeRight)
       return {
-        map: labTransform(res_down.map),
-        delta: labTransform(res_down.delta),
+        map: MatTransform(res_down.map),
+        delta: MatTransform(res_down.delta),
         score: res_down.score
       }
     default:
