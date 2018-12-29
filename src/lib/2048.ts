@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-27 22:36:53
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-29 18:55:17
+ * @Last Modified time: 2018-12-29 21:26:16
  */
 import { MatTransform } from './Mat'
 /**
@@ -95,21 +95,33 @@ export let mergeSuper = (arr: number[][], method: Method) => {
   }
 }
 /**
+ * IResult
+ *
+ * @export
+ * @interface IResult
+ */
+export interface IResult {
+  map: number[][]
+  delta: number[][]
+  score: number
+}
+/**
+ * IMethod
+ * @type {'left' | 'right' | 'up' | 'down'}
+ */
+export type IMethod = 'left' | 'right' | 'up' | 'down'
+/**
  * @interface ILabMerge
  */
-interface ILabMerge {
-  (lab: number[][], method: 'left' | 'right' | 'up' | 'down'): {
-    map: number[][]
-    delta: number[][]
-    score: number
-  }
+interface IMatMerge {
+  (lab: number[][], method: IMethod): IResult
 }
 /**
  * merge
  * @param lab
  * @param method 'left' | 'right' | 'up' | 'down'
  */
-export let merge: ILabMerge = (lab, method) => {
+export let mergeMat: IMatMerge = (lab, method) => {
   switch (method) {
     case 'left':
       return mergeSuper(lab, mergeLeft)

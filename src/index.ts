@@ -1,17 +1,33 @@
 import { randVec } from './lib/rand'
 import { call } from './lib/call'
-import { merge, mergeRight } from './lib/2048'
-import { Observable } from './lib/Observable'
+import { IMethod, IResult, mergeMat } from './lib/2048'
 import { Mat, MatSet } from './lib/Mat'
+import { Canvas, Block } from './lib/Canvas'
 
 let mat = new Mat(0, 3)
 
 mat.subscribe(arr => console.log(arr))
 
 let createNew = arr => call(() => MatSet(arr, 2, randVec(arr.length)), 2)
-let merge_left_map = arr => merge(arr, 'left').map
 
-mat.pipe(
-  createNew,
-  merge_left_map
-)
+let merge = (method: IMethod) =>
+  new Promise<IResult>(resolve => {
+    mat.pipe(
+      createNew,
+      arr => {
+        let result = mergeMat(arr, method)
+        resolve(result)
+        return result.map
+      }
+    )
+  })
+
+merge('up').then(res => console.log(res.delta))
+
+let canvas = new Canvas(100, 200)
+
+let block = new Block(50)
+  .setColor('green')
+  .setPosition(10, 10)
+  .setSize(40, 60)
+canvas.drawBlock(block)
