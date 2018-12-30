@@ -2,10 +2,16 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-29 23:37:28
+ * @Last Modified time: 2018-12-30 20:45:04
  */
 export class Canvas {
   private ctx: CanvasRenderingContext2D
+  /**
+   *Creates an instance of Canvas.
+   * @param {number} w
+   * @memberof Canvas
+   */
+  constructor(w: number)
   /**
    *Creates an instance of Canvas.
    * @param {number} w
@@ -21,27 +27,24 @@ export class Canvas {
    * @memberof Canvas
    */
   constructor(w: number, h: number, color: string)
-  /**
-   *Creates an instance of Canvas.
-   * @param {number} x
-   * @param {number} y
-   * @param {number} w
-   * @param {number} h
-   * @param {string} color
-   * @memberof Canvas
-   */
-  constructor(w: number, h: number, color: string, x: number, y: number)
-  constructor(w?, h?, color?, x?, y?) {
-    let ctx = document.getElementsByTagName('canvas')[0].getContext('2d')
+  constructor(w: number, h?: number, color?: string) {
+    let canvas = document.getElementById('canvas') as HTMLCanvasElement
+    if (!canvas) {
+      canvas = document.getElementsByTagName('canvas')[0]
+      if (!canvas) {
+        canvas = document.createElement('canvas')
+        document.body.appendChild(canvas)
+      }
+    }
+    canvas.width = w
+    canvas.height = h || w
+    let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     if (ctx) {
       this.ctx = ctx
       this.ctx.fillStyle = color || '#639181'
-      this.ctx.fillRect(
-        x || 0,
-        y || 0,
-        w || this.ctx.canvas.width,
-        h || this.ctx.canvas.height
-      )
+      this.ctx.fillRect(0, 0, canvas.width, canvas.height)
+    } else {
+      throw 'cannot get canvas context: ' + canvas
     }
   }
   /**
@@ -53,35 +56,70 @@ export class Canvas {
   /**
    * clear
    *
-   * @param {number} x
-   * @param {number} y
-   * @param {number} w
-   * @param {number} h
+   * @param {Block} x
+   * @returns {Canvas}
    * @memberof Canvas
    */
-  public clear(x: number, y: number, w: number, h: number): Canvas
-  public clear(x?, y?, w?, h?) {
-    this.ctx.clearRect(
-      x || 0,
-      y || 0,
-      w || this.ctx.canvas.width,
-      h || this.ctx.canvas.height
-    )
+  public clear(block: Block): Canvas
+  public clear(block?: Block) {
+    if (block) {
+      if (isBlock(block)) {
+        let { x, y, w, h } = block.getProps()
+        this.ctx.clearRect(x, y, w, h)
+        return this
+      }
+    }
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     return this
   }
+  /**
+   * fillWithProps
+   *
+   * @private
+   * @memberof Canvas
+   */
+  private fillWithProps = (props: IBlockProps) => {
+    let { x, y, w, h, color } = props
+    this.ctx.fillStyle = color
+    this.ctx.fillRect(x, y, w, h)
+  }
+  /**
+   * drawBlock
+   *
+   * @param {IBlockProps} block
+   * @memberof Canvas
+   */
+  public drawBlock(block: IBlockProps): Canvas
   /**
    * drawBlock
    *
    * @param {Block} block
    * @memberof Canvas
    */
-  public drawBlock(block: Block) {
-    this.ctx.fillStyle = block.getProps().color
-    let { x, y, width, height, color } = block.getProps()
-    this.ctx.fillStyle = color
-    this.ctx.fillRect(x, y, width, height)
+  public drawBlock(block: Block): Canvas
+  public drawBlock(block: IBlockProps | Block) {
+    if (isBlock(block)) {
+      this.fillWithProps(block.getProps())
+      return this
+    } else if (isBlockProps(block)) {
+      this.fillWithProps(block)
+      return this
+    }
+    return this
   }
 }
+/**
+ * isBlock
+ * @param block
+ */
+let isBlock = (block: Block | IBlockProps): block is Block =>
+  typeof block['getProps'] !== 'undefined'
+/**
+ * isBlockProps
+ * @param block
+ */
+let isBlockProps = (block: Block | IBlockProps): block is IBlockProps =>
+  typeof block['x'] !== 'undefined'
 /**
  * IBlockProps
  *
@@ -90,8 +128,8 @@ export class Canvas {
 interface IBlockProps {
   x: number
   y: number
-  width: number
-  height: number
+  w: number
+  h: number
   color: string
 }
 /**
@@ -104,9 +142,9 @@ export class Block {
   private props: IBlockProps = {
     x: 0,
     y: 0,
-    width: 50,
-    height: 50,
-    color: '#000000'
+    w: 50,
+    h: 50,
+    color: '#696949'
   }
   /**
    *Creates an instance of Block.
@@ -151,8 +189,8 @@ export class Block {
    */
   public setSize(w: number, h: number)
   public setSize(w?, h?) {
-    this.props.width = w
-    this.props.height = h || w
+    this.props.w = w
+    this.props.h = h || w
     return this
   }
   /**

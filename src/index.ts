@@ -24,10 +24,7 @@ let merge = (method: IMethod) =>
 
 merge('up').then(res => console.log(res.delta))
 
-let canvas = new Canvas(100, 200)
+let canvas = new Canvas(400)
 
-let block = new Block(50)
-  .setColor('green')
-  .setPosition(10, 10)
-  .setSize(40, 60)
-canvas.drawBlock(block)
+let block = new Block(100).setPosition(100)
+canvas.drawBlock(block).clear(block)
