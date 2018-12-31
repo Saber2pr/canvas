@@ -2,7 +2,7 @@ import { randVec } from './lib/rand'
 import { call } from './lib/call'
 import { IMethod, IResult, mergeMat } from './lib/2048'
 import { Mat, MatSet, Mat_foreach } from './lib/Mat'
-import { Canvas, Label, vec2 } from './lib/Canvas'
+import { Canvas, Label, vec2, Node } from './lib/Canvas'
 import { $ } from './lib/dom'
 
 let len = 4
@@ -45,3 +45,4 @@ initButtons('up')
 initButtons('down')
 initButtons('left')
 initButtons('right')
+
