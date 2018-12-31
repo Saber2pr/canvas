@@ -19,18 +19,9 @@ interface IBaseProps {
  *
  * @interface
  */
-interface IBlockProps extends IBaseProps {
+interface INodeProps extends IBaseProps {
   x: number
   y: number
-}
-/**
- * Rules
- */
-namespace Rules {
-  export let isBlock = (obj: any): obj is IBlockProps =>
-    typeof (obj as IBlockProps)['x'] !== 'undefined'
-  export let isLabel = (obj: any): obj is ILabelProps =>
-    typeof (obj as ILabelProps)['fontSize'] !== 'undefined'
 }
 /**
  * ILabelProps
@@ -38,9 +29,10 @@ namespace Rules {
  * @interface ILabelProps
  * @extends {}
  */
-interface ILabelProps extends IBlockProps {
+interface ILabelProps extends INodeProps {
   text: string
   fontSize: number
+  fontStyle: string
 }
 /**
  * Canvas
@@ -103,8 +95,9 @@ export class Canvas {
    * @memberof Canvas
    */
   private resetCtx() {
-    this.ctx.fillStyle = this.color || '#639181'
+    this.ctx.fillStyle = this.color
     this.ctx.fillRect(0, 0, this.w, this.h)
+    return this
   }
   /**
    * clear
@@ -115,15 +108,15 @@ export class Canvas {
   /**
    * clear
    *
-   * @param {Block} x
+   * @param {Node} x
    * @returns {Canvas}
    * @memberof Canvas
    */
-  public clear(block: Block): Canvas
-  public clear(block?: Block) {
-    if (block) {
-      let { x, y, w, h } = block.getProps()
-      this.ctx.clearRect(x, y, w, h)
+  public clear(node: Node): Canvas
+  public clear(node?: Node) {
+    if (node) {
+      node.setColor(this.color)
+      this.drawNode(node)
       return this
     }
     this.resetCtx()
@@ -134,40 +127,44 @@ export class Canvas {
    *
    * @memberof Canvas
    */
-  public clearAll() {
+  public destroy() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     return this
   }
   /**
-   * fillWithProps
+   * fillNode
    *
    * @private
+   * @param {INodeProps} props
    * @memberof Canvas
    */
-  private fillWithProps(props: IBlockProps)
-  private fillWithProps(props: ILabelProps)
-  private fillWithProps(props) {
-    if (Rules.isBlock(props)) {
-      let { x, y, w, h, color } = props
-      this.ctx.fillStyle = color
-      this.ctx.fillRect(x, y, w, h)
-    }
-    if (Rules.isLabel(props)) {
-      let { x, y, fontSize, text } = props
-      this.ctx.font = String(fontSize) + 'px' + ' ' + 'serif'
-      this.ctx.fillText(text, x, y)
-      console.log('label: ', props)
-    }
+  private fillNode(props: INodeProps) {
+    let { x, y, w, h, color } = props
+    this.ctx.fillStyle = color
+    this.ctx.fillRect(x, y, w, h)
+  }
+  /**
+   * fillLabel
+   *
+   * @private
+   * @param {ILabelProps} props
+   * @memberof Canvas
+   */
+  private fillLabel(props: ILabelProps) {
+    let { x, y, h, color, fontSize, fontStyle, text } = props
+    this.ctx.font = String(fontSize) + 'px' + ' ' + fontStyle
+    this.ctx.strokeStyle = color
+    this.ctx.strokeText(text, x, y + h)
   }
   /**
    * drawBlock
    *
-   * @param {...Block[]} block
+   * @param {...Node[]} node
    * @returns
    * @memberof Canvas
    */
-  public drawBlock(...block: Block[]) {
-    block.forEach(blk => this.fillWithProps(blk.getProps()))
+  public drawNode(...node: Node[]) {
+    node.forEach(n => this.fillNode(n.getProps()))
     return this
   }
   /**
@@ -176,7 +173,7 @@ export class Canvas {
    * @memberof Canvas
    */
   public drawLabel(...label: Label[]) {
-    label.forEach(lab => this.fillWithProps(lab.getProps()))
+    label.forEach(l => this.fillLabel(l.getProps()))
     return this
   }
 }
@@ -186,7 +183,7 @@ export class Canvas {
  * @export
  * @class Block
  */
-export class Block {
+export class Node {
   protected x: number
   protected y: number
   protected w: number
@@ -205,8 +202,20 @@ export class Block {
    * @memberof Block
    */
   constructor(w: number, h: number)
-  constructor(w: number, h?: number) {
-    this.setSize(w, h || w)
+  /**
+   *Creates an instance of Node.
+   * @param {number} w
+   * @param {number} h
+   * @param {string} color
+   * @memberof Node
+   */
+  constructor(w: number, h: number, color: string)
+  constructor(w: number, h?: number, color?: string) {
+    this.x = 0
+    this.y = 0
+    this.w = w
+    this.h = h || w
+    this.color = color || '#3a32af'
   }
   /**
    * setColor
@@ -216,7 +225,7 @@ export class Block {
    * @memberof Block
    */
   public setColor(color: string) {
-    this.color = color || '#696949'
+    this.color = color
     return this
   }
   /**
@@ -245,7 +254,7 @@ export class Block {
    * @param {number} x
    * @memberof Block
    */
-  public setPosition(x: number): Block
+  public setPosition(x: number): Node
   /**
    * setPosition
    *
@@ -253,7 +262,7 @@ export class Block {
    * @param {number} y
    * @memberof Block
    */
-  public setPosition(x: number, y: number): Block
+  public setPosition(x: number, y: number): Node
   public setPosition(x: number, y?: number) {
     this.x = x
     this.y = y || x
@@ -265,7 +274,7 @@ export class Block {
    * @returns
    * @memberof Block
    */
-  public getProps(): IBlockProps {
+  public getProps(): INodeProps {
     return {
       x: this.x,
       y: this.y,
@@ -280,10 +289,11 @@ export class Block {
  *
  * @export
  * @class Label
- * @extends {Block}
+ * @extends {Node}
  */
-export class Label extends Block {
+export class Label extends Node {
   protected fontSize: number
+  protected fontStyle: string
   protected text: string
   /**
    *Creates an instance of Label.
@@ -293,10 +303,11 @@ export class Label extends Block {
    * @param {string} text
    * @memberof Label
    */
-  constructor(w: number, h: number, fontSize: number, text: string) {
-    super(w, h)
-    this.fontSize = fontSize
+  constructor(text: string, fontSize: number = 23) {
+    super(text.length * fontSize, fontSize)
     this.text = text
+    this.fontSize = fontSize
+    this.fontStyle = 'serif'
   }
   /**
    * setFontSize
@@ -306,6 +317,18 @@ export class Label extends Block {
    */
   public setFontSize(fontSize: number) {
     this.fontSize = fontSize
+    return this
+  }
+  /**
+   * setFontStyle
+   *
+   * @param {string} fontStyle
+   * @returns
+   * @memberof Label
+   */
+  public setFontStyle(fontStyle: string) {
+    this.fontStyle = fontStyle
+    return this
   }
   /**
    * setText
@@ -313,18 +336,9 @@ export class Label extends Block {
    * @param {string} text
    * @memberof Label
    */
-  public setText(text: string)
-  /**
-   * setText
-   *
-   * @param {string} text
-   * @param {number} fontSize
-   * @memberof Label
-   */
-  public setText(text: string, fontSize: number)
-  public setText(text: string, fontSize?: number) {
+  public setText(text: string) {
     this.text = text
-    this.fontSize = fontSize || 48
+    return this
   }
   /**
    * getProps
@@ -340,6 +354,7 @@ export class Label extends Block {
       h: this.h,
       color: this.color,
       fontSize: this.fontSize,
+      fontStyle: this.fontStyle,
       text: this.text
     }
   }
