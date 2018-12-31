@@ -4,22 +4,55 @@
  * @Last Modified by: AK-12
  * @Last Modified time: 2018-12-30 21:30:01
  */
-interface IProps {
+/**
+ * IBaseProps
+ *
+ * @interface IProps
+ */
+interface IBaseProps {
   w: number
   h: number
   color: string
 }
+/**
+ *
+ *
+ * @interface
+ */
+interface IBlockProps extends IBaseProps {
+  x: number
+  y: number
+}
+/**
+ * Rules
+ */
+namespace Rules {
+  export let isBlock = (obj: any): obj is IBlockProps =>
+    typeof (obj as IBlockProps)['x'] !== 'undefined'
+  export let isLabel = (obj: any): obj is ILabelProps =>
+    typeof (obj as ILabelProps)['fontSize'] !== 'undefined'
+}
+/**
+ * ILabelProps
+ *
+ * @interface ILabelProps
+ * @extends {}
+ */
+interface ILabelProps extends IBlockProps {
+  text: string
+  fontSize: number
+}
+/**
+ * Canvas
+ *
+ * @export
+ * @class Canvas
+ */
 export class Canvas {
   private ctx: CanvasRenderingContext2D
-  private _props: IProps
-  /**
-   * props set
-   *
-   * @memberof Canvas
-   */
-  set props(props: IProps) {
-    this._props = props
-  }
+  protected w: number
+  protected h: number
+  protected color: string
   /**
    *Creates an instance of Canvas.
    * @param {number} w
@@ -55,11 +88,9 @@ export class Canvas {
     let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     if (ctx) {
       this.ctx = ctx
-      this.props = {
-        w: canvas.width,
-        h: canvas.height,
-        color: color || '#639181'
-      }
+      this.w = canvas.width
+      this.h = canvas.height
+      this.color = color || '#639181'
       this.resetCtx()
     } else {
       throw 'cannot get canvas context: ' + canvas
@@ -72,9 +103,8 @@ export class Canvas {
    * @memberof Canvas
    */
   private resetCtx() {
-    let { w, h, color } = this._props
-    this.ctx.fillStyle = color || '#639181'
-    this.ctx.fillRect(0, 0, w, h)
+    this.ctx.fillStyle = this.color || '#639181'
+    this.ctx.fillRect(0, 0, this.w, this.h)
   }
   /**
    * clear
@@ -92,13 +122,20 @@ export class Canvas {
   public clear(block: Block): Canvas
   public clear(block?: Block) {
     if (block) {
-      if (isBlock(block)) {
-        let { x, y, w, h } = block.getProps()
-        this.ctx.clearRect(x, y, w, h)
-        return this
-      }
+      let { x, y, w, h } = block.getProps()
+      this.ctx.clearRect(x, y, w, h)
+      return this
     }
     this.resetCtx()
+    return this
+  }
+  /**
+   * clearAll
+   *
+   * @memberof Canvas
+   */
+  public clearAll() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     return this
   }
   /**
@@ -107,59 +144,41 @@ export class Canvas {
    * @private
    * @memberof Canvas
    */
-  private fillWithProps = (props: IBlockProps) => {
-    let { x, y, w, h, color } = props
-    this.ctx.fillStyle = color
-    this.ctx.fillRect(x, y, w, h)
+  private fillWithProps(props: IBlockProps)
+  private fillWithProps(props: ILabelProps)
+  private fillWithProps(props) {
+    if (Rules.isBlock(props)) {
+      let { x, y, w, h, color } = props
+      this.ctx.fillStyle = color
+      this.ctx.fillRect(x, y, w, h)
+    }
+    if (Rules.isLabel(props)) {
+      let { x, y, fontSize, text } = props
+      this.ctx.font = String(fontSize) + 'px' + ' ' + 'serif'
+      this.ctx.fillText(text, x, y)
+      console.log('label: ', props)
+    }
   }
   /**
    * drawBlock
    *
-   * @param {IBlockProps} block
+   * @param {...Block[]} block
+   * @returns
    * @memberof Canvas
    */
-  public drawBlock(block: IBlockProps): Canvas
-  /**
-   * drawBlock
-   *
-   * @param {Block} block
-   * @memberof Canvas
-   */
-  public drawBlock(block: Block): Canvas
-  public drawBlock(block: IBlockProps | Block) {
-    if (isBlock(block)) {
-      this.fillWithProps(block.getProps())
-      return this
-    } else if (isBlockProps(block)) {
-      this.fillWithProps(block)
-      return this
-    }
+  public drawBlock(...block: Block[]) {
+    block.forEach(blk => this.fillWithProps(blk.getProps()))
     return this
   }
-}
-/**
- * isBlock
- * @param block
- */
-let isBlock = (block: any): block is Block =>
-  typeof (block as Block)['getProps'] !== 'undefined'
-/**
- * isBlockProps
- * @param block
- */
-let isBlockProps = (block: any): block is IBlockProps =>
-  typeof (block as IBlockProps)['x'] !== 'undefined'
-/**
- * IBlockProps
- *
- * @interface IBlockProps
- */
-interface IBlockProps {
-  x: number
-  y: number
-  w: number
-  h: number
-  color: string
+  /**
+   *
+   *
+   * @memberof Canvas
+   */
+  public drawLabel(...label: Label[]) {
+    label.forEach(lab => this.fillWithProps(lab.getProps()))
+    return this
+  }
 }
 /**
  * Block
@@ -168,13 +187,11 @@ interface IBlockProps {
  * @class Block
  */
 export class Block {
-  private props: IBlockProps = {
-    x: 0,
-    y: 0,
-    w: 50,
-    h: 50,
-    color: '#696949'
-  }
+  protected x: number
+  protected y: number
+  protected w: number
+  protected h: number
+  protected color: string
   /**
    *Creates an instance of Block.
    * @param {number} w
@@ -199,7 +216,7 @@ export class Block {
    * @memberof Block
    */
   public setColor(color: string) {
-    this.props.color = color
+    this.color = color || '#696949'
     return this
   }
   /**
@@ -218,8 +235,8 @@ export class Block {
    */
   public setSize(w: number, h: number)
   public setSize(w: number, h?: number) {
-    this.props.w = w
-    this.props.h = h || w
+    this.w = w
+    this.h = h || w
     return this
   }
   /**
@@ -228,7 +245,7 @@ export class Block {
    * @param {number} x
    * @memberof Block
    */
-  public setPosition(x: number)
+  public setPosition(x: number): Block
   /**
    * setPosition
    *
@@ -236,10 +253,10 @@ export class Block {
    * @param {number} y
    * @memberof Block
    */
-  public setPosition(x: number, y: number)
+  public setPosition(x: number, y: number): Block
   public setPosition(x: number, y?: number) {
-    this.props.x = x
-    this.props.y = y || x
+    this.x = x
+    this.y = y || x
     return this
   }
   /**
@@ -248,7 +265,82 @@ export class Block {
    * @returns
    * @memberof Block
    */
-  public getProps() {
-    return this.props
+  public getProps(): IBlockProps {
+    return {
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h,
+      color: this.color
+    }
+  }
+}
+/**
+ * Label
+ *
+ * @export
+ * @class Label
+ * @extends {Block}
+ */
+export class Label extends Block {
+  protected fontSize: number
+  protected text: string
+  /**
+   *Creates an instance of Label.
+   * @param {number} w
+   * @param {number} h
+   * @param {number} fontSize
+   * @param {string} text
+   * @memberof Label
+   */
+  constructor(w: number, h: number, fontSize: number, text: string) {
+    super(w, h)
+    this.fontSize = fontSize
+    this.text = text
+  }
+  /**
+   * setFontSize
+   *
+   * @param {number} fontSize
+   * @memberof Label
+   */
+  public setFontSize(fontSize: number) {
+    this.fontSize = fontSize
+  }
+  /**
+   * setText
+   *
+   * @param {string} text
+   * @memberof Label
+   */
+  public setText(text: string)
+  /**
+   * setText
+   *
+   * @param {string} text
+   * @param {number} fontSize
+   * @memberof Label
+   */
+  public setText(text: string, fontSize: number)
+  public setText(text: string, fontSize?: number) {
+    this.text = text
+    this.fontSize = fontSize || 48
+  }
+  /**
+   * getProps
+   *
+   * @returns {ILabelProps}
+   * @memberof Label
+   */
+  public getProps(): ILabelProps {
+    return {
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h,
+      color: this.color,
+      fontSize: this.fontSize,
+      text: this.text
+    }
   }
 }
