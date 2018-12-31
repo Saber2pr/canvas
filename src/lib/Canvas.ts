@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-30 21:30:01
+ * @Last Modified time: 2018-12-31 22:26:45
  */
 /**
  * IBaseProps
@@ -104,7 +104,7 @@ export class Canvas {
    *
    * @memberof Canvas
    */
-  public clear(): Canvas
+  public clear(): this
   /**
    * clear
    *
@@ -112,7 +112,7 @@ export class Canvas {
    * @returns {Canvas}
    * @memberof Canvas
    */
-  public clear(node: Node): Canvas
+  public clear(node: Node): this
   public clear(node?: Node) {
     if (node) {
       node.setColor(this.color)
@@ -254,7 +254,15 @@ export class Node {
    * @param {number} x
    * @memberof Block
    */
-  public setPosition(x: number): Node
+  public setPosition(x: number): this
+  /**
+   * setPosition
+   *
+   * @param {Vector} x
+   * @returns {Node}
+   * @memberof Node
+   */
+  public setPosition(x: Vector): this
   /**
    * setPosition
    *
@@ -262,11 +270,28 @@ export class Node {
    * @param {number} y
    * @memberof Block
    */
-  public setPosition(x: number, y: number): Node
-  public setPosition(x: number, y?: number) {
-    this.x = x
-    this.y = y || x
+  public setPosition(x: number, y: number): this
+  public setPosition(x: number | Vector, y?: number) {
+    if (Rules.isNumber(x)) {
+      this.x = x
+      this.y = y || x
+      return this
+    }
+    if (Rules.isVector(x)) {
+      this.x = x.x
+      this.y = x.y
+      return this
+    }
     return this
+  }
+  /**
+   * getPosition
+   *
+   * @returns
+   * @memberof Node
+   */
+  public getPosition() {
+    return new Vector(this.x, this.y)
   }
   /**
    * getProps
@@ -357,5 +382,105 @@ export class Label extends Node {
       fontStyle: this.fontStyle,
       text: this.text
     }
+  }
+}
+/**
+ * Rules
+ */
+namespace Rules {
+  export let isNumber = (obj: any): obj is number => typeof obj === 'number'
+  export let isVector = (obj: any): obj is Vector =>
+    typeof (obj as Vector)['mag'] !== 'undefined'
+}
+/**
+ * vec2
+ * @param x
+ * @param y
+ */
+export let vec2 = (x: number, y?: number) =>
+  Rules.isNumber(y) ? new Vector(x, y) : new Vector(x)
+/**
+ * Vector
+ *
+ * @class Vector
+ * @implements {IVector}
+ */
+export class Vector {
+  x: number
+  y: number
+  /**
+   *Creates an instance of Vector.
+   * @param {number} x
+   * @memberof Vector
+   */
+  constructor(x: number)
+  /**
+   *Creates an instance of Vector.
+   * @param {number} x
+   * @param {number} y
+   * @memberof Vector
+   */
+  constructor(x: number, y: number)
+  constructor(x: number, y?: number) {
+    this.x = x
+    this.y = y || this.x
+  }
+  isEquals(vector: Vector) {
+    return vector.x === this.x && vector.y === this.y
+  }
+  /**
+   * +
+   *
+   * @param {Vector} vector
+   * @returns {Vector}
+   * @memberof Vector
+   */
+  add(vector: Vector): this {
+    this.x += vector.x
+    this.y += vector.y
+    return this
+  }
+  /**
+   * -
+   *
+   * @param {Vector} vector
+   * @memberof Vector
+   */
+  sub(vector: Vector): this {
+    this.x -= vector.x
+    this.y -= vector.y
+    return this
+  }
+  /**
+   * scale to
+   *
+   * @param {number} scale
+   * @returns
+   * @memberof Vector
+   */
+  mul(scale: number) {
+    this.x *= scale
+    this.y *= scale
+    return this
+  }
+  /**
+   * get negative self
+   *
+   * @returns
+   * @memberof Vector
+   */
+  neg() {
+    this.x = -this.x
+    this.y = -this.y
+    return this
+  }
+  /**
+   * length
+   *
+   * @returns
+   * @memberof Vector
+   */
+  mag() {
+    return Math.sqrt(this.x * this.x + this.y * this.y)
   }
 }

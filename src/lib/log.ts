@@ -1,1 +1,2 @@
-export let log = obj => console.log(obj)
+export let log = (message?: any, ...optionalParams: any[]) =>
+  console.log(message, ...optionalParams)

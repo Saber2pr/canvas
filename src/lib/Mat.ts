@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-29 18:41:28
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-29 20:18:21
+ * @Last Modified time: 2018-12-31 21:45:00
  */
 import { Observable } from './Observable'
 /**
@@ -26,6 +26,24 @@ export let MatFill = <T>(value: T, x: number, y: number = x) =>
  * @param mat
  */
 export let MatClone = <T>(mat: T[][]): T[][] => mat.map(raw => [...raw])
+/**
+ * MatFlat
+ * @param mat
+ */
+export let MatFlat = <T>(mat: T[][]): T[] =>
+  Array.prototype.concat.apply([], mat)
+/**
+ * visitMat
+ * @param mat
+ * @param callback
+ */
+export let Mat_foreach = <T>(
+  mat: T[][],
+  callback: (value: T, raw: number, col: number) => void
+) =>
+  mat.forEach((raws, index_r) =>
+    raws.forEach((col, index_c) => callback(col, index_r, index_c))
+  )
 /**
  * MatSet
  * @param mat
