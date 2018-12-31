@@ -1,5 +1,7 @@
 # saber-canvas
 
+> use canvas easily!
+
 ```ts
 new Canvas(400)
   .clear()
