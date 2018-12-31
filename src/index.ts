@@ -27,4 +27,4 @@ merge('up').then(res => console.log(res.delta))
 let canvas = new Canvas(400)
 
 let block = new Block(100).setPosition(100)
-canvas.drawBlock(block).clear(block)
+canvas.drawBlock(block).clear()

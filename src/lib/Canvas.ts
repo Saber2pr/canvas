@@ -2,10 +2,24 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-30 20:45:04
+ * @Last Modified time: 2018-12-30 21:30:01
  */
+interface IProps {
+  w: number
+  h: number
+  color: string
+}
 export class Canvas {
   private ctx: CanvasRenderingContext2D
+  private _props: IProps
+  /**
+   * props set
+   *
+   * @memberof Canvas
+   */
+  set props(props: IProps) {
+    this._props = props
+  }
   /**
    *Creates an instance of Canvas.
    * @param {number} w
@@ -41,11 +55,26 @@ export class Canvas {
     let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     if (ctx) {
       this.ctx = ctx
-      this.ctx.fillStyle = color || '#639181'
-      this.ctx.fillRect(0, 0, canvas.width, canvas.height)
+      this.props = {
+        w: canvas.width,
+        h: canvas.height,
+        color: color || '#639181'
+      }
+      this.resetCtx()
     } else {
       throw 'cannot get canvas context: ' + canvas
     }
+  }
+  /**
+   * resetCtx
+   *
+   * @private
+   * @memberof Canvas
+   */
+  private resetCtx() {
+    let { w, h, color } = this._props
+    this.ctx.fillStyle = color || '#639181'
+    this.ctx.fillRect(0, 0, w, h)
   }
   /**
    * clear
@@ -69,7 +98,7 @@ export class Canvas {
         return this
       }
     }
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.resetCtx()
     return this
   }
   /**
@@ -112,14 +141,14 @@ export class Canvas {
  * isBlock
  * @param block
  */
-let isBlock = (block: Block | IBlockProps): block is Block =>
-  typeof block['getProps'] !== 'undefined'
+let isBlock = (block: any): block is Block =>
+  typeof (block as Block)['getProps'] !== 'undefined'
 /**
  * isBlockProps
  * @param block
  */
-let isBlockProps = (block: Block | IBlockProps): block is IBlockProps =>
-  typeof block['x'] !== 'undefined'
+let isBlockProps = (block: any): block is IBlockProps =>
+  typeof (block as IBlockProps)['x'] !== 'undefined'
 /**
  * IBlockProps
  *
@@ -159,7 +188,7 @@ export class Block {
    * @memberof Block
    */
   constructor(w: number, h: number)
-  constructor(w?, h?) {
+  constructor(w: number, h?: number) {
     this.setSize(w, h || w)
   }
   /**
@@ -188,7 +217,7 @@ export class Block {
    * @memberof Block
    */
   public setSize(w: number, h: number)
-  public setSize(w?, h?) {
+  public setSize(w: number, h?: number) {
     this.props.w = w
     this.props.h = h || w
     return this
@@ -208,7 +237,7 @@ export class Block {
    * @memberof Block
    */
   public setPosition(x: number, y: number)
-  public setPosition(x?, y?) {
+  public setPosition(x: number, y?: number) {
     this.props.x = x
     this.props.y = y || x
     return this
