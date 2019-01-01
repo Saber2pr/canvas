@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-29 18:55:04
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-01 10:43:29
+ * @Last Modified time: 2019-01-01 10:50:02
  */
 /**
  * compose
@@ -29,9 +29,7 @@ export function compose<T>(...funcs: Array<(...args: T[]) => T>) {
  * @param {T} value
  * @returns {T}
  */
-export function clone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value))
-}
+export const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value))
 /**
  * Observer
  *

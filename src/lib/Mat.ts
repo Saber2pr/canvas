@@ -2,14 +2,14 @@
  * @Author: AK-12
  * @Date: 2018-12-29 18:41:28
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-31 21:45:00
+ * @Last Modified time: 2019-01-01 10:49:23
  */
 import { Observable } from './Observable'
 /**
  * MatTransform
  * @param mat
  */
-export let MatTransform = <T>(mat: T[][]) =>
+export const MatTransform = <T>(mat: T[][]) =>
   mat[0].map((col, i) => mat.map(row => row[i]))
 /**
  * MatFill
@@ -17,7 +17,7 @@ export let MatTransform = <T>(mat: T[][]) =>
  * @param x
  * @param y
  */
-export let MatFill = <T>(value: T, x: number, y: number = x) =>
+export const MatFill = <T>(value: T, x: number, y: number = x) =>
   Array(y)
     .fill(0)
     .map(() => Array<T>(x).fill(value))
@@ -25,19 +25,19 @@ export let MatFill = <T>(value: T, x: number, y: number = x) =>
  * MatClone
  * @param mat
  */
-export let MatClone = <T>(mat: T[][]): T[][] => mat.map(raw => [...raw])
+export const MatClone = <T>(mat: T[][]): T[][] => mat.map(raw => [...raw])
 /**
  * MatFlat
  * @param mat
  */
-export let MatFlat = <T>(mat: T[][]): T[] =>
+export const MatFlat = <T>(mat: T[][]): T[] =>
   Array.prototype.concat.apply([], mat)
 /**
  * visitMat
  * @param mat
  * @param callback
  */
-export let Mat_foreach = <T>(
+export const Mat_foreach = <T>(
   mat: T[][],
   callback: (value: T, raw: number, col: number) => void
 ) =>
@@ -51,7 +51,7 @@ export let Mat_foreach = <T>(
  * @param raw
  * @param col
  */
-export let MatSet = <T>(
+export const MatSet = <T>(
   mat: T[][],
   value: T,
   vec: {

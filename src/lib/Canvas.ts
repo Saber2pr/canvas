@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-31 22:26:45
+ * @Last Modified time: 2019-01-01 12:05:10
  */
 /**
  * IBaseProps
@@ -33,149 +33,6 @@ interface ILabelProps extends INodeProps {
   text: string
   fontSize: number
   fontStyle: string
-}
-/**
- * Canvas
- *
- * @export
- * @class Canvas
- */
-export class Canvas {
-  private ctx: CanvasRenderingContext2D
-  protected w: number
-  protected h: number
-  protected color: string
-  /**
-   *Creates an instance of Canvas.
-   * @param {number} w
-   * @memberof Canvas
-   */
-  constructor(w: number)
-  /**
-   *Creates an instance of Canvas.
-   * @param {number} w
-   * @param {number} h
-   * @memberof Canvas
-   */
-  constructor(w: number, h: number)
-  /**
-   *Creates an instance of Canvas.
-   * @param {number} w
-   * @param {number} h
-   * @param {string} color
-   * @memberof Canvas
-   */
-  constructor(w: number, h: number, color: string)
-  constructor(w: number, h?: number, color?: string) {
-    let canvas = document.getElementById('canvas') as HTMLCanvasElement
-    if (!canvas) {
-      canvas = document.getElementsByTagName('canvas')[0]
-      if (!canvas) {
-        canvas = document.createElement('canvas')
-        document.body.appendChild(canvas)
-      }
-    }
-    canvas.width = w
-    canvas.height = h || w
-    let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-    if (ctx) {
-      this.ctx = ctx
-      this.w = canvas.width
-      this.h = canvas.height
-      this.color = color || '#639181'
-      this.resetCtx()
-    } else {
-      throw 'cannot get canvas context: ' + canvas
-    }
-  }
-  /**
-   * resetCtx
-   *
-   * @private
-   * @memberof Canvas
-   */
-  private resetCtx() {
-    this.ctx.fillStyle = this.color
-    this.ctx.fillRect(0, 0, this.w, this.h)
-    return this
-  }
-  /**
-   * clear
-   *
-   * @memberof Canvas
-   */
-  public clear(): this
-  /**
-   * clear
-   *
-   * @param {Node} x
-   * @returns {Canvas}
-   * @memberof Canvas
-   */
-  public clear(node: Node): this
-  public clear(node?: Node) {
-    if (node) {
-      node.setColor(this.color)
-      this.drawNode(node)
-      return this
-    }
-    this.resetCtx()
-    return this
-  }
-  /**
-   * clearAll
-   *
-   * @memberof Canvas
-   */
-  public destroy() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
-    return this
-  }
-  /**
-   * fillNode
-   *
-   * @private
-   * @param {INodeProps} props
-   * @memberof Canvas
-   */
-  private fillNode(props: INodeProps) {
-    let { x, y, w, h, color } = props
-    this.ctx.fillStyle = color
-    this.ctx.fillRect(x, y, w, h)
-  }
-  /**
-   * fillLabel
-   *
-   * @private
-   * @param {ILabelProps} props
-   * @memberof Canvas
-   */
-  private fillLabel(props: ILabelProps) {
-    let { x, y, h, color, fontSize, fontStyle, text } = props
-    this.ctx.font = String(fontSize) + 'px' + ' ' + fontStyle
-    this.ctx.strokeStyle = color
-    this.ctx.strokeText(text, x, y + h)
-  }
-  /**
-   * drawBlock
-   *
-   * @param {...Node[]} node
-   * @returns
-   * @memberof Canvas
-   */
-  public drawNode(...node: Node[]) {
-    node.forEach(n => this.fillNode(n.getProps()))
-    return this
-  }
-  /**
-   *
-   *
-   * @memberof Canvas
-   */
-  public drawLabel(...label: Label[]) {
-    label.forEach(l => this.fillLabel(l.getProps()))
-    return this
-  }
 }
 /**
  * Block
@@ -234,7 +91,7 @@ export class Node {
    * @param {number} w
    * @memberof Block
    */
-  public setSize(w: number)
+  public setSize(w: number): this
   /**
    * setSize
    *
@@ -242,7 +99,7 @@ export class Node {
    * @param {number} h
    * @memberof Block
    */
-  public setSize(w: number, h: number)
+  public setSize(w: number, h: number): this
   public setSize(w: number, h?: number) {
     this.w = w
     this.h = h || w
@@ -310,6 +167,116 @@ export class Node {
   }
 }
 /**
+ * Canvas
+ *
+ * @export
+ * @class Canvas
+ */
+export class Canvas extends Node {
+  private ctx: CanvasRenderingContext2D
+  /**
+   *Creates an instance of Canvas.
+   * @param {string} elementId
+   * @memberof Canvas
+   */
+  constructor(elementId: string, MaxWidth: number, MaxHeight: number) {
+    super(MaxWidth, MaxHeight)
+    let canvas = document.getElementById(elementId) as HTMLCanvasElement
+    if (canvas) {
+      canvas.width = MaxWidth
+      canvas.height = MaxHeight
+      this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    } else {
+      throw 'cannot get canvas element by id: ' + elementId
+    }
+  }
+  /**
+   * clear
+   *
+   * @memberof Canvas
+   */
+  public clear(): this
+  /**
+   * clear
+   *
+   * @param {Node} x
+   * @returns {Canvas}
+   * @memberof Canvas
+   */
+  public clear(node: Node): this
+  public clear(node?: Node) {
+    if (node) {
+      node.setColor(this.color)
+      this.draw(node)
+      return this
+    }
+    this.draw(this)
+    return this
+  }
+  /**
+   * clearAll
+   *
+   * @memberof Canvas
+   */
+  public destroy() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    return this
+  }
+  /**
+   * fillNode
+   *
+   * @private
+   * @param {INodeProps} props
+   * @memberof Canvas
+   */
+  private fillNode(props: INodeProps) {
+    let { x, y, w, h, color } = props
+    this.ctx.fillStyle = color
+    this.ctx.fillRect(x, y, w, h)
+    return this
+  }
+  /**
+   * fillLabel
+   *
+   * @private
+   * @param {ILabelProps} props
+   * @memberof Canvas
+   */
+  private fillLabel(props: ILabelProps) {
+    let { x, y, h, color, fontSize, fontStyle, text } = props
+    this.ctx.font = String(fontSize) + 'px' + ' ' + fontStyle
+    this.ctx.strokeStyle = color
+    this.ctx.strokeText(text, x, y + h)
+    return this
+  }
+  /**
+   * draw
+   *
+   * @param {...Node[]} node
+   * @returns {this}
+   * @memberof Canvas
+   */
+  public draw(...node: Node[]): this
+  /**
+   * draw
+   *
+   * @param {...Label[]} node
+   * @returns {this}
+   * @memberof Canvas
+   */
+  public draw(...node: Label[]): this
+  public draw(...node) {
+    this.ctx.canvas.style.marginLeft = String(this.x) + 'px'
+    this.ctx.canvas.style.marginTop = String(this.y) + 'px'
+    if (Rules.isLabel(node[0])) {
+      node.forEach(l => this.fillLabel(l.getProps()))
+      return this
+    }
+    node.forEach(n => this.fillNode(n.getProps()))
+    return this
+  }
+}
+/**
  * Label
  *
  * @export
@@ -333,6 +300,7 @@ export class Label extends Node {
     this.text = text
     this.fontSize = fontSize
     this.fontStyle = 'serif'
+    this.color = '563a6d'
   }
   /**
    * setFontSize
@@ -388,8 +356,11 @@ export class Label extends Node {
  * Rules
  */
 namespace Rules {
-  export let isNumber = (obj: any): obj is number => typeof obj === 'number'
-  export let isVector = (obj: any): obj is Vector =>
+  export const isNumber = (obj: any): obj is number => typeof obj === 'number'
+  export const isString = (obj: any): obj is String => typeof obj === 'string'
+  export const isLabel = (obj: any): obj is Label =>
+    typeof (obj as Label)['text'] !== 'undefined'
+  export const isVector = (obj: any): obj is Vector =>
     typeof (obj as Vector)['mag'] !== 'undefined'
 }
 /**
@@ -397,7 +368,7 @@ namespace Rules {
  * @param x
  * @param y
  */
-export let vec2 = (x: number, y?: number) =>
+export const vec2 = (x: number, y?: number) =>
   Rules.isNumber(y) ? new Vector(x, y) : new Vector(x)
 /**
  * Vector

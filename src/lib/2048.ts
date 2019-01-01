@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-27 22:36:53
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-31 23:08:45
+ * @Last Modified time: 2019-01-01 10:47:39
  */
 import { MatTransform } from './Mat'
 /**
@@ -118,24 +118,24 @@ interface IMatMerge {
 }
 /**
  * merge
- * @param lab
+ * @param mat
  * @param method 'left' | 'right' | 'up' | 'down'
  */
-export let mergeMat: IMatMerge = (lab, method) => {
+export let mergeMat: IMatMerge = (mat, method) => {
   switch (method) {
     case 'left':
-      return mergeSuper(lab, mergeLeft)
+      return mergeSuper(mat, mergeLeft)
     case 'right':
-      return mergeSuper(lab, mergeRight)
+      return mergeSuper(mat, mergeRight)
     case 'up':
-      let res_up = mergeSuper(MatTransform(lab), mergeLeft)
+      let res_up = mergeSuper(MatTransform(mat), mergeLeft)
       return {
         map: MatTransform(res_up.map),
         delta: MatTransform(res_up.delta),
         score: res_up.score
       }
     case 'down':
-      let res_down = mergeSuper(MatTransform(lab), mergeRight)
+      let res_down = mergeSuper(MatTransform(mat), mergeRight)
       return {
         map: MatTransform(res_down.map),
         delta: MatTransform(res_down.delta),
