@@ -2,21 +2,19 @@
  * @Author: AK-12
  * @Date: 2018-12-29 18:55:04
  * @Last Modified by: AK-12
- * @Last Modified time: 2018-12-29 20:43:30
+ * @Last Modified time: 2019-01-01 10:43:29
  */
 /**
  * compose
  *
  * @export
- * @template argType
- * @param {...Array<(...args: argType[]) => argType>} funcs
+ * @template T
+ * @param {...Array<(...args: T[]) => T>} funcs
  * @returns
  */
-export function compose<argType>(
-  ...funcs: Array<(...args: argType[]) => argType>
-) {
+export function compose<T>(...funcs: Array<(...args: T[]) => T>) {
   if (funcs.length === 0) {
-    return (arg: argType) => arg
+    return (arg: T) => arg
   }
   if (funcs.length === 1) {
     return funcs[0]
@@ -44,6 +42,13 @@ export function clone<T>(value: T): T {
 export interface Observer<T> {
   (state: T): void
 }
+/**
+ * UnSubscribe
+ *
+ * @export
+ * @interface UnSubscribe
+ * @template T
+ */
 export interface UnSubscribe<T> {
   (): Observer<T>[]
 }
