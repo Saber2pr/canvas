@@ -2,12 +2,12 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-01 19:09:33
+ * @Last Modified time: 2019-01-01 19:40:39
  */
 /**
  * @interface IRectProps
  */
-interface IRectProps {
+export interface IRectProps {
   x: number
   y: number
   w: number
@@ -17,7 +17,7 @@ interface IRectProps {
  * @interface IRect
  * @extends {IRectProps}
  */
-interface IRect extends IRectProps {
+export interface IRect extends IRectProps {
   setPosition(x: number, y: number): this
   setSize(w: number, h: number): this
 }
@@ -25,39 +25,21 @@ interface IRect extends IRectProps {
  * @interface INodeProps
  * @extends {IRectProps}
  */
-interface INodeProps extends IRectProps {
+export interface INodeProps extends IRectProps {
   color: string
 }
 /**
  * @interface INode
  * @extends {INodeProps}
  */
-interface INode extends INodeProps {
+export interface INode extends INodeProps {
   setColor(color: string): this
-}
-/**
- * @interface ICanvasProps
- * @extends {INodeProps}
- */
-interface ICanvasProps extends INodeProps {
-  ctx: CanvasRenderingContext2D
-}
-/**
- * @interface ICanvas
- * @extends {ICanvasProps}
- */
-interface ICanvas extends ICanvasProps {
-  clear(): this
-  clear(rect: IRectProps): this
-  destroy(): this
-  draw(...node: INodeProps[]): this
-  draw(...node: ILabelProps[]): this
 }
 /**
  * @interface ILabelProps
  * @extends {INodeProps}
  */
-interface ILabelProps extends INodeProps {
+export interface ILabelProps extends INodeProps {
   text: string
   fontSize: number
   fontStyle: string
@@ -66,15 +48,25 @@ interface ILabelProps extends INodeProps {
  * @interface ILabel
  * @extends {ILabelProps}
  */
-interface ILabel extends ILabelProps {
+export interface ILabel extends ILabelProps {
   setText(text: string): this
   setFontSize(fontSize: number): this
   setFontStyle(fontStyle: string): this
 }
 /**
+ * @interface ICanvas
+ * @extends {ICanvasProps}
+ */
+export interface ICanvas {
+  clear(): this
+  clear(rect: IRectProps): this
+  draw(...node: INodeProps[]): this
+  draw(...node: ILabelProps[]): this
+}
+/**
  * Rules
  */
-namespace Rules {
+export namespace Rules {
   /**
    * isLabelPropsArray
    * @param obj
@@ -175,123 +167,6 @@ export class Node extends Rect implements INode {
 }
 /**
  * @export
- * @class Canvas
- * @extends {Node}
- * @implements {ICanvas}
- */
-export class Canvas extends Node implements ICanvas {
-  ctx: CanvasRenderingContext2D
-  /**
-   *Creates an instance of Canvas.
-   * @param {string} elementId
-   * @param {number} MaxWidth
-   * @param {number} MaxHeight
-   * @memberof Canvas
-   */
-  constructor(elementId: string, MaxWidth: number, MaxHeight: number) {
-    super(MaxWidth, MaxHeight)
-    let canvas = document.getElementById(elementId)
-    if (Rules.isCanvas(canvas)) {
-      canvas.width = MaxWidth
-      canvas.height = MaxHeight
-      let ctx = canvas.getContext('2d')
-      if (Rules.isCtx(ctx)) {
-        this.ctx = ctx
-      }
-    } else {
-      throw 'cannot get canvas element by id: ' + elementId
-    }
-  }
-  /**
-   * @returns {this}
-   * @memberof Canvas
-   */
-  public clear(): this
-  /**
-   * @param {IRectProps} rect
-   * @returns {this}
-   * @memberof Canvas
-   */
-  public clear(rect: IRectProps): this
-  public clear(rect?: IRectProps) {
-    if (rect) {
-      let { x, y, w, h } = rect
-      this.draw({
-        x: x,
-        y: y,
-        w: w,
-        h: h,
-        color: this.color
-      })
-      return this
-    }
-    this.draw(this)
-    return this
-  }
-  /**
-   * @returns
-   * @memberof Canvas
-   */
-  public destroy() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
-    return this
-  }
-  /**
-   * @private
-   * @param {INodeProps} props
-   * @returns
-   * @memberof Canvas
-   */
-  private fillNode(props: INodeProps) {
-    let { x, y, w, h, color } = props
-    this.ctx.fillStyle = color
-    this.ctx.fillRect(x, y, w, h)
-    return this
-  }
-  /**
-   * @private
-   * @param {ILabelProps} props
-   * @returns
-   * @memberof Canvas
-   */
-  private fillLabel(props: ILabelProps) {
-    let { x, y, h, color, fontSize, fontStyle, text } = props
-    this.ctx.font = String(fontSize) + 'px' + ' ' + fontStyle
-    this.ctx.strokeStyle = color
-    this.ctx.strokeText(text, x, y + h)
-    return this
-  }
-  /**
-   * @param {...INodeProps[]} node
-   * @returns {this}
-   * @memberof Canvas
-   */
-  public draw(...node: INodeProps[]): this
-  /**
-   * @param {...ILabelProps[]} node
-   * @returns {this}
-   * @memberof Canvas
-   */
-  public draw(...node: ILabelProps[]): this
-  public draw(...node: INodeProps[] | ILabelProps[]) {
-    this.ctx.canvas.style.marginLeft = String(this.x) + 'px'
-    this.ctx.canvas.style.marginTop = String(this.y) + 'px'
-    if (node.length > 0) {
-      if (Rules.isLabelPropsArray(node)) {
-        node.forEach(l => this.fillLabel(l))
-        return this
-      }
-      if (Rules.isNodePropsArray(node)) {
-        node.forEach(n => this.fillNode(n))
-        return this
-      }
-      return this
-    }
-    return this
-  }
-}
-/**
- * @export
  * @class Label
  * @extends {Node}
  * @implements {ILabel}
@@ -339,6 +214,111 @@ export class Label extends Node implements ILabel {
    */
   public setText(text: string) {
     this.text = text
+    return this
+  }
+}
+/**
+ * @export
+ * @class Canvas
+ * @extends {Node}
+ * @implements {ICanvas}
+ */
+export class Canvas implements ICanvas {
+  /**
+   * @private
+   * @type {CanvasRenderingContext2D}
+   * @memberof Canvas
+   */
+  private ctx: CanvasRenderingContext2D
+  /**
+   *Creates an instance of Canvas.
+   * @param {string} elementId
+   * @param {number} MaxWidth
+   * @param {number} MaxHeight
+   * @memberof Canvas
+   */
+  constructor(elementId: string, MaxWidth: number, MaxHeight: number) {
+    let canvas = document.getElementById(elementId)
+    if (Rules.isCanvas(canvas)) {
+      canvas.width = MaxWidth
+      canvas.height = MaxHeight
+      let ctx = canvas.getContext('2d')
+      if (Rules.isCtx(ctx)) {
+        this.ctx = ctx
+      }
+    } else {
+      throw 'cannot get canvas element by id: ' + elementId
+    }
+  }
+  /**
+   * @returns {this}
+   * @memberof Canvas
+   */
+  public clear(): this
+  /**
+   * @param {IRectProps} rect
+   * @returns {this}
+   * @memberof Canvas
+   */
+  public clear(rect: IRectProps): this
+  public clear(rect?: IRectProps) {
+    if (rect) {
+      let { x, y, w, h } = rect
+      this.ctx.clearRect(x, y, w, h)
+      return this
+    }
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    return this
+  }
+  /**
+   * @private
+   * @param {INodeProps} props
+   * @returns
+   * @memberof Canvas
+   */
+  private fillNode(props: INodeProps) {
+    let { x, y, w, h, color } = props
+    this.ctx.fillStyle = color
+    this.ctx.fillRect(x, y, w, h)
+    return this
+  }
+  /**
+   * @private
+   * @param {ILabelProps} props
+   * @returns
+   * @memberof Canvas
+   */
+  private fillLabel(props: ILabelProps) {
+    let { x, y, h, color, fontSize, fontStyle, text } = props
+    this.ctx.font = String(fontSize) + 'px' + ' ' + fontStyle
+    this.ctx.strokeStyle = color
+    this.ctx.strokeText(text, x, y + h)
+    return this
+  }
+  /**
+   * @param {...INodeProps[]} node
+   * @returns {this}
+   * @memberof Canvas
+   */
+  public draw(...node: INodeProps[]): this
+  /**
+   * @param {...ILabelProps[]} node
+   * @returns {this}
+   * @memberof Canvas
+   */
+  public draw(...node: ILabelProps[]): this
+  public draw(...node: INodeProps[] | ILabelProps[]) {
+    if (node.length > 0) {
+      if (Rules.isLabelPropsArray(node)) {
+        node.forEach(l => this.fillLabel(l))
+        return this
+      }
+      if (Rules.isNodePropsArray(node)) {
+        node.forEach(n => this.fillNode(n))
+        return this
+      }
+      return this
+    }
     return this
   }
 }
