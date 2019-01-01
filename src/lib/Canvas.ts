@@ -2,26 +2,35 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-01 12:05:10
+ * @Last Modified time: 2019-01-01 18:27:17
  */
 /**
- * IBaseProps
+ * IRectProps
  *
  * @interface IProps
  */
-interface IBaseProps {
+interface IRectProps {
   w: number
   h: number
   color: string
 }
 /**
- *
+ * INodeProps
  *
  * @interface
  */
-interface INodeProps extends IBaseProps {
+interface INodeProps extends IRectProps {
   x: number
   y: number
+}
+/**
+ * ICanvasProps
+ *
+ * @interface ICanvasProps
+ * @extends {INodeProps}
+ */
+interface ICanvasProps extends INodeProps {
+  ctx: CanvasRenderingContext2D
 }
 /**
  * ILabelProps
@@ -35,44 +44,62 @@ interface ILabelProps extends INodeProps {
   fontStyle: string
 }
 /**
- * Block
- *
- * @export
- * @class Block
+ * Rules
  */
-export class Node {
-  protected x: number
-  protected y: number
-  protected w: number
-  protected h: number
-  protected color: string
+namespace Rules {
   /**
-   *Creates an instance of Block.
-   * @param {number} w
-   * @memberof Block
+   * isLabel
+   * @param obj
    */
-  constructor(w: number)
+  export const isLabelArray = (obj: any): obj is Label[] =>
+    typeof (obj as Label[])[0]['text'] !== 'undefined'
   /**
-   *Creates an instance of Block.
-   * @param {number} w
-   * @param {number} h
-   * @memberof Block
+   * isCanvas
+   * @param obj
    */
-  constructor(w: number, h: number)
+  export const isCanvas = (obj: any): obj is HTMLCanvasElement =>
+    typeof (obj as HTMLCanvasElement)['getContext'] !== 'undefined'
   /**
-   *Creates an instance of Node.
+   * isCtx
+   * @param obj
+   */
+  export const isCtx = (obj: any): obj is CanvasRenderingContext2D =>
+    typeof (obj as CanvasRenderingContext2D)['canvas'] !== 'undefined'
+}
+/**
+ * Rect
+ *
+ * @class Rect
+ * @implements {IRectProps}
+ */
+export class Rect implements IRectProps {
+  w: number
+  h: number
+  color: string
+  /**
+   *Creates an instance of Rect.
    * @param {number} w
    * @param {number} h
    * @param {string} color
+   * @memberof Rect
+   */
+  constructor(w: number, h: number) {
+    this.color = '#3a32af'
+    this.w = w
+    this.h = h
+  }
+  /**
+   * setSize
+   *
+   * @param {number} w
+   * @param {number} h
+   * @returns
    * @memberof Node
    */
-  constructor(w: number, h: number, color: string)
-  constructor(w: number, h?: number, color?: string) {
-    this.x = 0
-    this.y = 0
+  public setSize(w: number, h: number) {
     this.w = w
-    this.h = h || w
-    this.color = color || '#3a32af'
+    this.h = h
+    return this
   }
   /**
    * setColor
@@ -85,85 +112,40 @@ export class Node {
     this.color = color
     return this
   }
+}
+/**
+ * Block
+ *
+ * @export
+ * @class Block
+ */
+export class Node extends Rect implements INodeProps {
+  x: number
+  y: number
   /**
-   * setSize
-   *
-   * @param {number} w
-   * @memberof Block
-   */
-  public setSize(w: number): this
-  /**
-   * setSize
-   *
+   *Creates an instance of Node.
    * @param {number} w
    * @param {number} h
-   * @memberof Block
-   */
-  public setSize(w: number, h: number): this
-  public setSize(w: number, h?: number) {
-    this.w = w
-    this.h = h || w
-    return this
-  }
-  /**
-   * setPosition
-   *
-   * @param {number} x
-   * @memberof Block
-   */
-  public setPosition(x: number): this
-  /**
-   * setPosition
-   *
-   * @param {Vector} x
-   * @returns {Node}
+   * @param {string} color
    * @memberof Node
    */
-  public setPosition(x: Vector): this
+  constructor(w: number, h: number) {
+    super(w, h)
+    this.x = 0
+    this.y = 0
+  }
   /**
    * setPosition
    *
    * @param {number} x
    * @param {number} y
-   * @memberof Block
-   */
-  public setPosition(x: number, y: number): this
-  public setPosition(x: number | Vector, y?: number) {
-    if (Rules.isNumber(x)) {
-      this.x = x
-      this.y = y || x
-      return this
-    }
-    if (Rules.isVector(x)) {
-      this.x = x.x
-      this.y = x.y
-      return this
-    }
-    return this
-  }
-  /**
-   * getPosition
-   *
    * @returns
    * @memberof Node
    */
-  public getPosition() {
-    return new Vector(this.x, this.y)
-  }
-  /**
-   * getProps
-   *
-   * @returns
-   * @memberof Block
-   */
-  public getProps(): INodeProps {
-    return {
-      x: this.x,
-      y: this.y,
-      w: this.w,
-      h: this.h,
-      color: this.color
-    }
+  public setPosition(x: number, y: number) {
+    this.x = x
+    this.y = y
+    return this
   }
 }
 /**
@@ -172,20 +154,25 @@ export class Node {
  * @export
  * @class Canvas
  */
-export class Canvas extends Node {
-  private ctx: CanvasRenderingContext2D
+export class Canvas extends Node implements ICanvasProps {
+  ctx: CanvasRenderingContext2D
   /**
    *Creates an instance of Canvas.
    * @param {string} elementId
+   * @param {number} MaxWidth
+   * @param {number} MaxHeight
    * @memberof Canvas
    */
   constructor(elementId: string, MaxWidth: number, MaxHeight: number) {
     super(MaxWidth, MaxHeight)
-    let canvas = document.getElementById(elementId) as HTMLCanvasElement
-    if (canvas) {
+    let canvas = document.getElementById(elementId)
+    if (Rules.isCanvas(canvas)) {
       canvas.width = MaxWidth
       canvas.height = MaxHeight
-      this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+      let ctx = canvas.getContext('2d')
+      if (Rules.isCtx(ctx)) {
+        this.ctx = ctx
+      }
     } else {
       throw 'cannot get canvas element by id: ' + elementId
     }
@@ -265,14 +252,14 @@ export class Canvas extends Node {
    * @memberof Canvas
    */
   public draw(...node: Label[]): this
-  public draw(...node) {
+  public draw(...node: Node[] | Label[]) {
     this.ctx.canvas.style.marginLeft = String(this.x) + 'px'
     this.ctx.canvas.style.marginTop = String(this.y) + 'px'
-    if (Rules.isLabel(node[0])) {
-      node.forEach(l => this.fillLabel(l.getProps()))
+    if (Rules.isLabelArray(node)) {
+      node.forEach(l => this.fillLabel(l))
       return this
     }
-    node.forEach(n => this.fillNode(n.getProps()))
+    node.forEach(n => this.fillNode(n))
     return this
   }
 }
@@ -283,10 +270,10 @@ export class Canvas extends Node {
  * @class Label
  * @extends {Node}
  */
-export class Label extends Node {
-  protected fontSize: number
-  protected fontStyle: string
-  protected text: string
+export class Label extends Node implements ILabelProps {
+  fontSize: number
+  fontStyle: string
+  text: string
   /**
    *Creates an instance of Label.
    * @param {number} w
@@ -297,10 +284,10 @@ export class Label extends Node {
    */
   constructor(text: string, fontSize: number = 23) {
     super(text.length * fontSize, fontSize)
-    this.text = text
-    this.fontSize = fontSize
     this.fontStyle = 'serif'
     this.color = '563a6d'
+    this.text = text
+    this.fontSize = fontSize
   }
   /**
    * setFontSize
@@ -310,6 +297,7 @@ export class Label extends Node {
    */
   public setFontSize(fontSize: number) {
     this.fontSize = fontSize
+    this.setSize(this.text.length * fontSize, fontSize)
     return this
   }
   /**
@@ -332,126 +320,5 @@ export class Label extends Node {
   public setText(text: string) {
     this.text = text
     return this
-  }
-  /**
-   * getProps
-   *
-   * @returns {ILabelProps}
-   * @memberof Label
-   */
-  public getProps(): ILabelProps {
-    return {
-      x: this.x,
-      y: this.y,
-      w: this.w,
-      h: this.h,
-      color: this.color,
-      fontSize: this.fontSize,
-      fontStyle: this.fontStyle,
-      text: this.text
-    }
-  }
-}
-/**
- * Rules
- */
-namespace Rules {
-  export const isNumber = (obj: any): obj is number => typeof obj === 'number'
-  export const isString = (obj: any): obj is String => typeof obj === 'string'
-  export const isLabel = (obj: any): obj is Label =>
-    typeof (obj as Label)['text'] !== 'undefined'
-  export const isVector = (obj: any): obj is Vector =>
-    typeof (obj as Vector)['mag'] !== 'undefined'
-}
-/**
- * vec2
- * @param x
- * @param y
- */
-export const vec2 = (x: number, y?: number) =>
-  Rules.isNumber(y) ? new Vector(x, y) : new Vector(x)
-/**
- * Vector
- *
- * @class Vector
- * @implements {IVector}
- */
-export class Vector {
-  x: number
-  y: number
-  /**
-   *Creates an instance of Vector.
-   * @param {number} x
-   * @memberof Vector
-   */
-  constructor(x: number)
-  /**
-   *Creates an instance of Vector.
-   * @param {number} x
-   * @param {number} y
-   * @memberof Vector
-   */
-  constructor(x: number, y: number)
-  constructor(x: number, y?: number) {
-    this.x = x
-    this.y = y || this.x
-  }
-  isEquals(vector: Vector) {
-    return vector.x === this.x && vector.y === this.y
-  }
-  /**
-   * +
-   *
-   * @param {Vector} vector
-   * @returns {Vector}
-   * @memberof Vector
-   */
-  add(vector: Vector): this {
-    this.x += vector.x
-    this.y += vector.y
-    return this
-  }
-  /**
-   * -
-   *
-   * @param {Vector} vector
-   * @memberof Vector
-   */
-  sub(vector: Vector): this {
-    this.x -= vector.x
-    this.y -= vector.y
-    return this
-  }
-  /**
-   * scale to
-   *
-   * @param {number} scale
-   * @returns
-   * @memberof Vector
-   */
-  mul(scale: number) {
-    this.x *= scale
-    this.y *= scale
-    return this
-  }
-  /**
-   * get negative self
-   *
-   * @returns
-   * @memberof Vector
-   */
-  neg() {
-    this.x = -this.x
-    this.y = -this.y
-    return this
-  }
-  /**
-   * length
-   *
-   * @returns
-   * @memberof Vector
-   */
-  mag() {
-    return Math.sqrt(this.x * this.x + this.y * this.y)
   }
 }
