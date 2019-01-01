@@ -1,9 +1,15 @@
-import { randVec } from './lib/rand'
-import { call } from './lib/call'
-import { IMethod, IResult, mergeMat } from './lib/2048'
-import { Mat, MatSet, Mat_foreach } from './lib/Mat'
-import { Canvas, Label, Node } from './lib/Canvas'
-import { $ } from './lib/dom'
+/*
+ * @Author: AK-12
+ * @Date: 2019-01-01 19:53:34
+ * @Last Modified by:   AK-12
+ * @Last Modified time: 2019-01-01 19:53:34
+ */
+import { Mat, Mat_foreach, MatSet } from '../lib/Mat'
+import { Canvas, Label, Node } from '../lib/Canvas'
+import { IMethod, IResult, mergeMat } from '../lib/2048'
+import { call } from '../lib/call'
+import { randVec } from '../lib/rand'
+import { $ } from '../lib/dom'
 
 let len = 4
 let size = 70
@@ -52,9 +58,3 @@ initButtons('up')
 initButtons('down')
 initButtons('left')
 initButtons('right')
-
-let title = new Label('hello world').setPosition(170, 10)
-let background = new Node(640, 480)
-let block = new Node(60, 100).setColor('green').setPosition(200, 100)
-
-new Canvas('hello', 500, 500).draw(background, block).draw(title)
