@@ -2,15 +2,15 @@
  * @Author: AK-12
  * @Date: 2019-01-01 17:49:55
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-01 17:55:24
+ * @Last Modified time: 2019-01-01 18:29:27
  */
 /**
  * vec2
  * @param x
  * @param y
  */
-export function v2(x: number)
-export function v2(x: number, y: number)
+export function v2(x: number): Vector
+export function v2(x: number, y: number): Vector
 export function v2(x: number, y?: number) {
   if (y) {
     return new Vector(x, y)

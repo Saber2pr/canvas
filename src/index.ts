@@ -1,4 +1,5 @@
-import { Canvas, Node, Label } from './lib/Canvas'
+import { Canvas } from './lib/Canvas'
+import { v2 } from './lib/vector'
 
 // import { randVec } from './lib/rand'
 // import { call } from './lib/call'
@@ -48,7 +49,5 @@ import { Canvas, Node, Label } from './lib/Canvas'
 // initButtons('left')
 // initButtons('right')
 
-new Canvas('test', 300, 300)
-  .setPosition(100)
-  .draw(new Node(100).setPosition(40))
-  .draw(new Label('2019'))
+let canvas = new Canvas('test', 300, 300).clear({'w':12, 'h': 123, x: 12, y: 123})
+canvas.draw(canvas)
