@@ -4,12 +4,12 @@
  * @Last Modified by:   AK-12
  * @Last Modified time: 2019-01-01 19:53:34
  */
-import { Mat, Mat_foreach, MatSet } from '../lib/Mat'
+import { Mat, Mat_foreach, MatSet } from '../external/Mat'
 import { Canvas, Label, Node } from '../lib/Canvas'
-import { IMethod, IResult, mergeMat } from '../lib/2048'
-import { call } from '../lib/call'
-import { randVec } from '../lib/rand'
-import { $ } from '../lib/dom'
+import { IMethod, IResult, mergeMat } from '../external/2048'
+import { call } from '../external/call'
+import { randVec } from '../external/rand'
+import { $ } from '../external/dom'
 
 let len = 4
 let size = 70
