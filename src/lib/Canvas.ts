@@ -10,12 +10,12 @@
  */
 export interface IBase {
   /**
-   * if you don't know what you are doing, don't write this value!
+   * Don't change this value, unless you know what you are doing.
    *
-   * @type {('Rect' | 'Node' | 'Label' | 'Sprite')}
+   * @type {('Rect' | 'Node' | 'Label')}
    * @memberof IBase
    */
-  type: 'Rect' | 'Node' | 'Label' | 'Sprite'
+  type: 'Rect' | 'Node' | 'Label'
 }
 /**
  * @export
@@ -74,22 +74,6 @@ export interface ILabel extends ILabelProps {
 }
 /**
  * @export
- * @interface ISpriteProps
- * @extends {IRectProps}
- */
-export interface ISpriteProps extends IRectProps {
-  img: HTMLImageElement
-}
-/**
- * @export
- * @interface ISprite
- * @extends {ISpriteProps}
- */
-export interface ISprite extends ISpriteProps {
-  setSrc(url: string): this
-}
-/**
- * @export
  * @interface ICanvas
  * @extends {ICanvasProps}
  */
@@ -113,11 +97,6 @@ export namespace Rules {
    */
   export const isNodePropsArray = (obj: any): obj is INodeProps[] =>
     (obj as INodeProps[])[0]['type'] === 'Node'
-  /**
-   * @param obj
-   */
-  export const isSpritePropsArray = (obj: any): obj is ISpriteProps[] =>
-    (obj as ISpriteProps[])[0]['type'] === 'Sprite'
   /**
    * @param obj
    */
@@ -262,40 +241,6 @@ export class Label extends Node implements ILabel {
 }
 /**
  * @export
- * @class Sprite
- * @extends {Rect}
- * @implements {ISprite}
- */
-export class Sprite extends Rect implements ISprite {
-  type: ISprite['type']
-  /**
-   * @type {HTMLImageElement}
-   * @memberof Sprite
-   */
-  img: HTMLImageElement
-  /**
-   *Creates an instance of Sprite.
-   * @param {number} x
-   * @param {number} y
-   * @memberof Sprite
-   */
-  constructor(w: number, h: number) {
-    super(w, h)
-    this.img = new Image(w, h)
-    this.type = 'Sprite'
-  }
-  /**
-   * @param {string} url
-   * @returns
-   * @memberof Sprite
-   */
-  public setSrc(url: string) {
-    this.img.src = url
-    return this
-  }
-}
-/**
- * @export
  * @class Canvas
  * @extends {Node}
  * @implements {ICanvas}
@@ -369,16 +314,6 @@ export class Canvas implements ICanvas {
     this.ctx.strokeText(text, x, y + h)
   }
   /**
-   * @private
-   * @param {ISpriteProps} props
-   * @memberof Canvas
-   */
-  private fillSprite(props: ISpriteProps) {
-    let { x, y, w, h, img } = props
-    this.ctx.drawImage(img, x, y, w, h)
-    console.log(img)
-  }
-  /**
    * @param {...INodeProps[]} node
    * @returns {this}
    * @memberof Canvas
@@ -390,8 +325,7 @@ export class Canvas implements ICanvas {
    * @memberof Canvas
    */
   public draw(...node: ILabelProps[]): this
-  public draw(...node: ISpriteProps[]): this
-  public draw(...node: INodeProps[] | ILabelProps[] | ISpriteProps[]) {
+  public draw(...node: INodeProps[] | ILabelProps[]) {
     if (node.length > 0) {
       if (Rules.isLabelPropsArray(node)) {
         node.forEach(l => this.fillLabel(l))
@@ -399,10 +333,6 @@ export class Canvas implements ICanvas {
       }
       if (Rules.isNodePropsArray(node)) {
         node.forEach(n => this.fillNode(n))
-        return this
-      }
-      if (Rules.isSpritePropsArray(node)) {
-        node.forEach(s => this.fillSprite(s))
         return this
       }
       return this
