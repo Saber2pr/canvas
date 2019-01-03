@@ -1,6 +1,6 @@
 {
   "name": "saber-canvas",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "use canvas easily!",
   "main": "./lib/index.js",
   "scripts": {
