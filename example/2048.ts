@@ -1,15 +1,16 @@
 /*
  * @Author: AK-12
  * @Date: 2019-01-01 19:53:34
- * @Last Modified by:   AK-12
- * @Last Modified time: 2019-01-01 19:53:34
+ * @Last Modified by: AK-12
+ * @Last Modified time: 2019-01-03 11:04:03
  */
 import { Mat, Mat_foreach, MatSet } from '../external/Mat'
-import { Canvas, Label, Node } from '../lib/Canvas'
+import { Canvas } from '../lib/Canvas'
 import { IMethod, IResult, mergeMat } from '../external/2048'
 import { call } from '../external/call'
 import { randVec } from '../external/rand'
 import { $ } from '../external/dom'
+import { Label, Node } from '../lib/Rect'
 
 let len = 4
 let size = 70

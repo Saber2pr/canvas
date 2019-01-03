@@ -30,28 +30,11 @@ export interface IRectProps extends IBase {
 }
 /**
  * @export
- * @interface IRect
- * @extends {IRectProps}
- */
-export interface IRect extends IRectProps {
-  setPosition(x: number, y: number): this
-  setSize(w: number, h: number): this
-}
-/**
- * @export
  * @interface INodeProps
  * @extends {IRectProps}
  */
 export interface INodeProps extends IRectProps {
   color: string
-}
-/**
- * @export
- * @interface INode
- * @extends {INodeProps}
- */
-export interface INode extends INodeProps {
-  setColor(color: string): this
 }
 /**
  * @interface ILabelProps
@@ -63,40 +46,29 @@ export interface ILabelProps extends INodeProps {
   fontStyle: string
 }
 /**
- * @export
- * @interface ILabel
- * @extends {ILabelProps}
- */
-export interface ILabel extends ILabelProps {
-  setText(text: string): this
-  setFontSize(fontSize: number): this
-  setFontStyle(fontStyle: string): this
-}
-/**
- * @export
- * @interface ICanvas
- * @extends {ICanvasProps}
- */
-export interface ICanvas {
-  clear(): this
-  clear(rect: IRectProps): this
-  draw(...node: INodeProps[]): this
-  draw(...node: ILabelProps[]): this
-}
-/**
  * Rules
  */
 export namespace Rules {
   /**
    * @param obj
    */
-  export const isLabelPropsArray = (obj: any): obj is ILabelProps[] =>
-    (obj as ILabelProps[])[0]['type'] === 'Label'
+  export const isLabel = (obj: Object): obj is ILabelProps =>
+    (obj as ILabelProps)['type'] === 'Label'
   /**
    * @param obj
    */
-  export const isNodePropsArray = (obj: any): obj is INodeProps[] =>
-    (obj as INodeProps[])[0]['type'] === 'Node'
+  export const isLabelPropsArray = (obj: Object[]): obj is ILabelProps[] =>
+    isLabel(obj[0])
+  /**
+   * @param obj
+   */
+  export const isNode = (obj: Object): obj is INodeProps =>
+    (obj as INodeProps)['type'] === 'Node'
+  /**
+   * @param obj
+   */
+  export const isNodePropsArray = (obj: Object[]): obj is INodeProps[] =>
+    isNode(obj[0])
   /**
    * @param obj
    */
@@ -110,134 +82,14 @@ export namespace Rules {
 }
 /**
  * @export
- * @class Rect
- * @implements {IRect}
+ * @interface ICanvas
+ * @extends {ICanvasProps}
  */
-export class Rect implements IRect {
-  type: IRect['type']
-  x: number
-  y: number
-  w: number
-  h: number
-  /**
-   *Creates an instance of Rect.
-   * @param {number} w
-   * @param {number} h
-   * @memberof Rect
-   */
-  constructor(w: number, h: number) {
-    this.x = 0
-    this.y = 0
-    this.w = w
-    this.h = h
-    this.type = 'Rect'
-  }
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @returns
-   * @memberof Rect
-   */
-  public setPosition(x: number, y: number) {
-    this.x = x
-    this.y = y
-    return this
-  }
-  /**
-   * @param {number} w
-   * @param {number} h
-   * @returns
-   * @memberof Rect
-   */
-  public setSize(w: number, h: number) {
-    this.w = w
-    this.h = h
-    return this
-  }
-}
-/**
- * @export
- * @class Node
- * @extends {Rect}
- * @implements {INode}
- */
-export class Node extends Rect implements INode {
-  type: INode['type']
-  color: string
-  /**
-   *Creates an instance of Node.
-   * @param {number} w
-   * @param {number} h
-   * @memberof Node
-   */
-  constructor(w: number, h: number) {
-    super(w, h)
-    this.color = '#3a32af'
-    this.type = 'Node'
-  }
-  /**
-   * @param {string} color
-   * @returns
-   * @memberof Node
-   */
-  public setColor(color: string) {
-    this.color = color
-    return this
-  }
-}
-/**
- * @export
- * @class Label
- * @extends {Node}
- * @implements {ILabel}
- */
-export class Label extends Node implements ILabel {
-  type: ILabel['type']
-  fontSize: number
-  fontStyle: string
-  text: string
-  /**
-   *Creates an instance of Label.
-   * @param {string} text
-   * @param {number} [fontSize=23]
-   * @memberof Label
-   */
-  constructor(text: string, fontSize: number = 23) {
-    super(text.length * fontSize, fontSize)
-    this.fontStyle = 'serif'
-    this.color = '563a6d'
-    this.text = text
-    this.fontSize = fontSize
-    this.type = 'Label'
-  }
-  /**
-   * @param {number} fontSize
-   * @returns
-   * @memberof Label
-   */
-  public setFontSize(fontSize: number) {
-    this.fontSize = fontSize
-    this.setSize(this.text.length * fontSize, fontSize)
-    return this
-  }
-  /**
-   * @param {string} fontStyle
-   * @returns
-   * @memberof Label
-   */
-  public setFontStyle(fontStyle: string) {
-    this.fontStyle = fontStyle
-    return this
-  }
-  /**
-   * @param {string} text
-   * @returns
-   * @memberof Label
-   */
-  public setText(text: string) {
-    this.text = text
-    return this
-  }
+export interface ICanvas {
+  clear(): this
+  clear(rect: IRectProps): this
+  draw(...node: INodeProps[]): this
+  draw(...node: ILabelProps[]): this
 }
 /**
  * @export
@@ -320,11 +172,11 @@ export class Canvas implements ICanvas {
    */
   public draw(...node: INodeProps[]): this
   /**
-   * @param {...ILabelProps[]} node
+   * @param {...ILabelProps[]} label
    * @returns {this}
    * @memberof Canvas
    */
-  public draw(...node: ILabelProps[]): this
+  public draw(...label: ILabelProps[]): this
   public draw(...node: INodeProps[] | ILabelProps[]) {
     if (node.length > 0) {
       if (Rules.isLabelPropsArray(node)) {
