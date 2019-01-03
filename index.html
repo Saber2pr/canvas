@@ -6,19 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <script src="./static/js/require.js"></script>
-  <script src="./dist/index.js"></script>
+  <script src="./build/index.js"></script>
   <title>vscode-launch-ts</title>
 </head>
 
 <body>
-  <canvas id="2048"></canvas>
-  <div><button id="up">left</button>
-    <button id="down">right</button> <button id="left">up</button>
-    <button id="right">down</button></div>
   <canvas id="hello"></canvas>
 </body>
 <script>
-  require(['example/2048'])
   require(['example/helloworld'])
 </script>
 

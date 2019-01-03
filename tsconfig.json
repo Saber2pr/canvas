@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "outFile": "./dist/index.js",
+    "outDir": "./build",
+    "outFile": "./build/index.js",
     "module": "amd",
     "target": "es5",
-    "allowJs": true,
-    "removeComments": true,
-    "strictNullChecks": true,
+    "declaration": true,
+    "removeComments": false,
     "lib": [
       "dom",
       "es7"

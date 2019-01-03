@@ -2,6 +2,10 @@
 
 > use canvas easily!
 
+```bash
+npm install saber-canvas
+```
+
 ```ts
 new Canvas('hello', 640, 480)
   .draw(new Node(640, 480))
