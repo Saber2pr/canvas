@@ -272,11 +272,20 @@ define("lib/Rect", ["require", "exports"], function (require, exports) {
     }(Node));
     exports.Label = Label;
 });
-define("example/helloworld", ["require", "exports", "lib/Canvas", "lib/Rect"], function (require, exports, Canvas_1, Rect_1) {
+define("saber-canvas", ["require", "exports", "lib/Canvas", "lib/Rect"], function (require, exports, Canvas_1, Rect_1) {
+    "use strict";
+    function __export(m) {
+        for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+    }
+    Object.defineProperty(exports, "__esModule", { value: true });
+    __export(Canvas_1);
+    __export(Rect_1);
+});
+define("example/helloworld", ["require", "exports", "lib/Canvas", "lib/Rect"], function (require, exports, Canvas_2, Rect_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    new Canvas_1.Canvas('hello', 640, 480)
-        .draw(new Rect_1.Node(640, 480))
-        .draw(new Rect_1.Label('hello world!').setPosition(300, 20))
-        .draw(new Rect_1.Node(100, 200).setColor('blue').setPosition(200, 200));
+    new Canvas_2.Canvas('hello', 640, 480)
+        .draw(new Rect_2.Node(640, 480))
+        .draw(new Rect_2.Label('hello world!').setPosition(300, 20))
+        .draw(new Rect_2.Node(100, 200).setColor('blue').setPosition(200, 200));
 });

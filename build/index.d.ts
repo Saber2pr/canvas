@@ -261,4 +261,8 @@ declare module "lib/Rect" {
         setText(text: string): this;
     }
 }
+declare module "saber-canvas" {
+    export * from "lib/Canvas";
+    export * from "lib/Rect";
+}
 declare module "example/helloworld" { }
