@@ -1,10 +1,14 @@
 {
   "name": "saber-canvas",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "use canvas easily!",
   "main": "./build/index.js",
   "scripts": {
     "start": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saber2pr/saber-canvas.git"
   },
   "author": "saber2pr",
   "license": "ISC",
