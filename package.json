@@ -2,7 +2,7 @@
   "name": "saber-canvas",
   "version": "1.0.2",
   "description": "use canvas easily!",
-  "main": "./build/index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "start": "tsc --watch"
   },
