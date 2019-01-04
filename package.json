@@ -1,18 +1,20 @@
 {
   "name": "saber-canvas",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "use canvas easily!",
-  "main": "./lib/index.js",
-  "scripts": {
-    "start": "tsc --watch"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Saber2pr/saber-canvas.git"
   },
   "author": "saber2pr",
   "license": "ISC",
+  "main": "./lib/index.js",
+  "scripts": {
+    "start": "tsc --watch",
+    "pack": "webpack"
+  },
   "devDependencies": {
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.1",
+    "webpack": "^3.12.0"
   }
 }

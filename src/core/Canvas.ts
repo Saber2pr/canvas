@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-01 23:17:51
+ * @Last Modified time: 2019-01-04 16:11:43
  */
 /**
  * @export
@@ -113,12 +113,14 @@ export class Canvas implements ICanvas {
    */
   constructor(elementId: string, MaxWidth: number, MaxHeight: number) {
     let canvas = document.getElementById(elementId)
-    if (Rules.isCanvas(canvas)) {
-      canvas.width = MaxWidth
-      canvas.height = MaxHeight
-      let ctx = canvas.getContext('2d')
-      if (Rules.isCtx(ctx)) {
-        this.ctx = ctx
+    if (canvas) {
+      if (Rules.isCanvas(canvas)) {
+        canvas.width = MaxWidth
+        canvas.height = MaxHeight
+        let ctx = canvas.getContext('2d')
+        if (Rules.isCtx(ctx)) {
+          this.ctx = ctx
+        }
       }
     } else {
       throw 'cannot get canvas element by id: ' + elementId
