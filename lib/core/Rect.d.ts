@@ -1,4 +1,4 @@
-import { IRectProps, INodeProps, ILabelProps } from './Canvas';
+import { IRectProps, INodeProps, ILabelProps } from './saber-canvas';
 /**
  * @export
  * @interface IRect

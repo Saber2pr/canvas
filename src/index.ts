@@ -1,2 +1,2 @@
-export * from './core/Canvas'
+export * from './core/saber-canvas'
 export * from './core/Rect'

@@ -1,6 +1,11 @@
-import { Canvas } from '../core/Canvas'
-import { Node, Label } from '../core/Rect'
+import { Canvas } from '../core/saber-canvas'
+import { Node, Label, Rect } from '../core/Rect'
 
-new Canvas('test', 400, 400)
-  .draw(new Node(400, 400))
+let size = {
+  width: 600,
+  height: 600
+}
+
+new Canvas('test', size.width, size.height)
+  .draw(new Node(size.width, size.height))
   .draw(new Label('hello canvas!'))

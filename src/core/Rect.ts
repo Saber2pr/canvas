@@ -4,7 +4,7 @@
  * @Last Modified by:   AK-12
  * @Last Modified time: 2019-01-03 11:03:08
  */
-import { IRectProps, INodeProps, ILabelProps } from './Canvas'
+import { IRectProps, INodeProps, ILabelProps } from './saber-canvas'
 /**
  * @export
  * @interface IRect
