@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2019-01-01 17:49:55
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-08 21:01:04
+ * @Last Modified time: 2019-01-08 21:42:06
  */
 /**
  * 2 => 4
@@ -41,12 +41,94 @@ interface IVector<T = Vector2D | Vector3D> {
   x: number
   y: number
   z?: number
+  /**
+   * props
+   *
+   * @memberof IVector
+   */
+  props: () => {
+    x: number
+    y: number
+    z?: number
+  }
+  /**
+   * isEquals
+   *
+   * @param {T} vector
+   * @returns {boolean}
+   * @memberof IVector
+   */
   isEquals(vector: T): boolean
+  /**
+   * +
+   *
+   * @param {T} vector
+   * @returns {T}
+   * @memberof IVector
+   */
   add(vector: T): T
+  /**
+   * -
+   *
+   * @param {T} vector
+   * @returns {T}
+   * @memberof IVector
+   */
   sub(vector: T): T
+  /**
+   * *
+   *
+   * @param {T} vector
+   * @returns {T}
+   * @memberof IVector
+   */
   mul(vector: T): T
+  /**
+   * /
+   *
+   * @param {T} vector
+   * @returns {T}
+   * @memberof IVector
+   */
+  div(vector: T): T
+  /**
+   * return -1 * self
+   *
+   * @returns {T}
+   * @memberof IVector
+   */
   neg(): T
+  /**
+   * length
+   *
+   * @returns {number}
+   * @memberof IVector
+   */
   mag(): number
+  /**
+   * angle by vector
+   *
+   * @param {T} vector
+   * @returns {number}
+   * @memberof IVector
+   */
+  angleWith(vector: T): number
+  /**
+   * vec1 . vec2
+   *
+   * @param {T} vector
+   * @returns {number}
+   * @memberof IVector
+   */
+  product(vector: T): number
+  /**
+   * return its unit
+   *
+   * @param {T} vector
+   * @returns {T}
+   * @memberof IVector
+   */
+  unitized(vector: T): T
 }
 /**
  * @export
@@ -56,80 +138,50 @@ interface IVector<T = Vector2D | Vector3D> {
 export class Vector2D implements IVector<Vector2D> {
   x: number
   y: number
-  /**
-   *Creates an instance of Vector.
-   * @param {number} x
-   * @memberof Vector
-   */
-  constructor(x: number)
-  /**
-   *Creates an instance of Vector.
-   * @param {number} x
-   * @param {number} y
-   * @memberof Vector
-   */
-  constructor(x: number, y: number)
-  constructor(x: number, y?: number) {
+  constructor(x: number, y: number) {
     this.x = x
-    this.y = y || this.x
+    this.y = y
   }
+  props = () => ({ x: this.x, y: this.y })
   isEquals(vector2d: Vector2D) {
     return vector2d.x === this.x && vector2d.y === this.y
   }
-  /**
-   * +
-   *
-   * @param {Vector2D} vector2d
-   * @returns {Vector2D}
-   * @memberof Vector
-   */
   add(vector: Vector2D) {
     return new Vector2D(this.x + vector.x, this.y + vector.y)
   }
-  /**
-   * -
-   *
-   * @param {Vector2D} vector2d
-   * @memberof Vector
-   */
   sub(vector: Vector2D) {
     return new Vector2D(this.x - vector.x, this.y - vector.y)
   }
-  /**
-   * scale to
-   *
-   * @param {number} scale
-   * @returns
-   * @memberof Vector
-   */
   mul(vector: Vector2D) {
     return new Vector2D(this.x * vector.x, this.y * vector.y)
   }
-  /**
-   * get negative self
-   *
-   * @returns
-   * @memberof Vector
-   */
+  div(vector: Vector2D) {
+    return new Vector2D(this.x / vector.x, this.y / vector.y)
+  }
   neg() {
     return new Vector2D(-this.x, -this.y)
   }
-  /**
-   * length
-   *
-   * @returns
-   * @memberof Vector
-   */
   mag() {
     return magnitude2d(this.x, this.y)
   }
+  angleWith(vector: Vector2D) {
+    return this.product(vector) / (this.mag() * vector.mag())
+  }
+  product(vector: Vector2D) {
+    return this.x * vector.x + this.y * vector.y
+  }
+  unitized() {
+    return new Vector2D(this.x / this.mag(), this.y / this.mag())
+  }
 }
 /**
+ * @export
  * @class Vector3D
  * @implements {IVector<Vector3D>}
  */
-class Vector3D implements IVector<Vector3D> {
+export class Vector3D implements IVector<Vector3D> {
   constructor(public x: number, public y: number, public z: number) {}
+  props = () => ({ x: this.x, y: this.y, z: this.z })
   isEquals(vector3d: Vector3D) {
     return (
       this.x === vector3d.x && this.y === vector3d.y && this.z === vector3d.z
@@ -161,18 +213,12 @@ class Vector3D implements IVector<Vector3D> {
   mag() {
     return magnitude3d(this.x, this.y, this.z)
   }
-  /**
-   * @param {Vector3D} vector
-   * @returns rad
-   * @memberof Vector3D
-   */
   angleWith(vector: Vector3D) {
-    return this.product(vector) / (this.mag() * vector.mag())
+    return Math.acos(this.product(vector) / (this.mag() * vector.mag()))
   }
   product(vector: Vector3D) {
     return this.x * vector.x + this.y * vector.y + this.z * vector.z
   }
-  projection(rad: number) {}
   unitized() {
     return new Vector3D(
       this.x / this.mag(),
@@ -180,7 +226,6 @@ class Vector3D implements IVector<Vector3D> {
       this.z / this.mag()
     )
   }
-  rotate(rad: number) {}
 }
 /**
  * @interface ILine
@@ -189,7 +234,20 @@ class Vector3D implements IVector<Vector3D> {
 interface ILine<T = Vector2D | Vector3D> {
   start: T
   end: T
+  /**
+   * return projection-self on line-target
+   *
+   * @param {this} line
+   * @returns {Line}
+   * @memberof ILine
+   */
   projection(line: this): Line
+  /**
+   *return its vector, from start to end
+   *
+   * @returns {Vector3D}
+   * @memberof ILine
+   */
   toVec(): Vector3D
 }
 /**
@@ -212,7 +270,3 @@ export class Line implements ILine<Vector3D> {
     return this.end.sub(this.start)
   }
 }
-export class Axis {
-  constructor() {}
-}
-export class Camera {}

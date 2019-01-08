@@ -33,12 +33,94 @@ interface IVector<T = Vector2D | Vector3D> {
     x: number;
     y: number;
     z?: number;
+    /**
+     * props
+     *
+     * @memberof IVector
+     */
+    props: () => {
+        x: number;
+        y: number;
+        z?: number;
+    };
+    /**
+     * isEquals
+     *
+     * @param {T} vector
+     * @returns {boolean}
+     * @memberof IVector
+     */
     isEquals(vector: T): boolean;
+    /**
+     * +
+     *
+     * @param {T} vector
+     * @returns {T}
+     * @memberof IVector
+     */
     add(vector: T): T;
+    /**
+     * -
+     *
+     * @param {T} vector
+     * @returns {T}
+     * @memberof IVector
+     */
     sub(vector: T): T;
+    /**
+     * *
+     *
+     * @param {T} vector
+     * @returns {T}
+     * @memberof IVector
+     */
     mul(vector: T): T;
+    /**
+     * /
+     *
+     * @param {T} vector
+     * @returns {T}
+     * @memberof IVector
+     */
+    div(vector: T): T;
+    /**
+     * return -1 * self
+     *
+     * @returns {T}
+     * @memberof IVector
+     */
     neg(): T;
+    /**
+     * length
+     *
+     * @returns {number}
+     * @memberof IVector
+     */
     mag(): number;
+    /**
+     * angle by vector
+     *
+     * @param {T} vector
+     * @returns {number}
+     * @memberof IVector
+     */
+    angleWith(vector: T): number;
+    /**
+     * vec1 . vec2
+     *
+     * @param {T} vector
+     * @returns {number}
+     * @memberof IVector
+     */
+    product(vector: T): number;
+    /**
+     * return its unit
+     *
+     * @param {T} vector
+     * @returns {T}
+     * @memberof IVector
+     */
+    unitized(vector: T): T;
 }
 /**
  * @export
@@ -48,67 +130,37 @@ interface IVector<T = Vector2D | Vector3D> {
 export declare class Vector2D implements IVector<Vector2D> {
     x: number;
     y: number;
-    /**
-     *Creates an instance of Vector.
-     * @param {number} x
-     * @memberof Vector
-     */
-    constructor(x: number);
-    /**
-     *Creates an instance of Vector.
-     * @param {number} x
-     * @param {number} y
-     * @memberof Vector
-     */
     constructor(x: number, y: number);
+    props: () => {
+        x: number;
+        y: number;
+    };
     isEquals(vector2d: Vector2D): boolean;
-    /**
-     * +
-     *
-     * @param {Vector2D} vector2d
-     * @returns {Vector2D}
-     * @memberof Vector
-     */
     add(vector: Vector2D): Vector2D;
-    /**
-     * -
-     *
-     * @param {Vector2D} vector2d
-     * @memberof Vector
-     */
     sub(vector: Vector2D): Vector2D;
-    /**
-     * scale to
-     *
-     * @param {number} scale
-     * @returns
-     * @memberof Vector
-     */
     mul(vector: Vector2D): Vector2D;
-    /**
-     * get negative self
-     *
-     * @returns
-     * @memberof Vector
-     */
+    div(vector: Vector2D): Vector2D;
     neg(): Vector2D;
-    /**
-     * length
-     *
-     * @returns
-     * @memberof Vector
-     */
     mag(): number;
+    angleWith(vector: Vector2D): number;
+    product(vector: Vector2D): number;
+    unitized(): Vector2D;
 }
 /**
+ * @export
  * @class Vector3D
  * @implements {IVector<Vector3D>}
  */
-declare class Vector3D implements IVector<Vector3D> {
+export declare class Vector3D implements IVector<Vector3D> {
     x: number;
     y: number;
     z: number;
     constructor(x: number, y: number, z: number);
+    props: () => {
+        x: number;
+        y: number;
+        z: number;
+    };
     isEquals(vector3d: Vector3D): boolean;
     add(vector3d: Vector3D): Vector3D;
     sub(vector3d: Vector3D): Vector3D;
@@ -116,16 +168,9 @@ declare class Vector3D implements IVector<Vector3D> {
     div(vector: Vector3D): Vector3D;
     neg(): Vector3D;
     mag(): number;
-    /**
-     * @param {Vector3D} vector
-     * @returns rad
-     * @memberof Vector3D
-     */
     angleWith(vector: Vector3D): number;
     product(vector: Vector3D): number;
-    projection(rad: number): void;
     unitized(): Vector3D;
-    rotate(rad: number): void;
 }
 /**
  * @interface ILine
@@ -134,7 +179,20 @@ declare class Vector3D implements IVector<Vector3D> {
 interface ILine<T = Vector2D | Vector3D> {
     start: T;
     end: T;
+    /**
+     * return projection-self on line-target
+     *
+     * @param {this} line
+     * @returns {Line}
+     * @memberof ILine
+     */
     projection(line: this): Line;
+    /**
+     *return its vector, from start to end
+     *
+     * @returns {Vector3D}
+     * @memberof ILine
+     */
     toVec(): Vector3D;
 }
 /**
@@ -148,10 +206,5 @@ export declare class Line implements ILine<Vector3D> {
     constructor(start: Vector3D, end: Vector3D);
     projection(line: Line): Line;
     toVec(): Vector3D;
-}
-export declare class Axis {
-    constructor();
-}
-export declare class Camera {
 }
 export {};

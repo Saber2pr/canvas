@@ -1,11 +1,5 @@
-import { Canvas } from '../core/saber-canvas'
-import { Node, Label, Rect } from '../core/Rect'
+import { test_canvas } from './test_canvas'
+import { test_vector } from './test_vector'
 
-let size = {
-  width: 600,
-  height: 600
-}
-
-new Canvas('test', size.width, size.height)
-  .draw(new Node(size.width, size.height))
-  .draw(new Label('hello canvas!'))
+test_canvas()
+test_vector()
