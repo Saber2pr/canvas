@@ -2,7 +2,7 @@
  * @Author: AK-12
  * @Date: 2018-12-29 23:10:57
  * @Last Modified by: AK-12
- * @Last Modified time: 2019-01-08 21:01:32
+ * @Last Modified time: 2019-01-18 21:48:21
  */
 /**
  * @export
@@ -15,7 +15,7 @@ export interface IBase {
    * @type {('Rect' | 'Node' | 'Label')}
    * @memberof IBase
    */
-  type: 'Rect' | 'Node' | 'Label'
+  type: 'Rect' | 'Node' | 'Label' | 'Sprite'
 }
 /**
  * @export
@@ -46,6 +46,14 @@ export interface ILabelProps extends INodeProps {
   fontStyle: string
 }
 /**
+ * @export
+ * @interface ISpriteProps
+ * @extends {IRectProps}
+ */
+export interface ISpriteProps extends IRectProps {
+  img: HTMLImageElement
+}
+/**
  * Rules
  */
 export namespace Rules {
@@ -72,6 +80,16 @@ export namespace Rules {
   /**
    * @param obj
    */
+  export const isSprite = (obj: any): obj is ISpriteProps =>
+    (obj as ISpriteProps)['type'] === 'Sprite'
+  /**
+   * @param obj
+   */
+  export const isSpritePropsArray = (obj: Object[]): obj is ISpriteProps[] =>
+    isSprite(obj[0])
+  /**
+   * @param obj
+   */
   export const isCanvas = (obj: any): obj is HTMLCanvasElement =>
     typeof (obj as HTMLCanvasElement)['getContext'] !== 'undefined'
   /**
@@ -89,7 +107,9 @@ export interface ICanvas {
   clear(): this
   clear(rect: IRectProps): this
   draw(...node: INodeProps[]): this
-  draw(...node: ILabelProps[]): this
+  draw(...label: ILabelProps[]): this
+  draw(...sprite: ISpriteProps[]): this
+  getImageData(sx: number, sy: number, sw: number, sh: number): ImageData
 }
 /**
  * @export
@@ -168,6 +188,27 @@ export class Canvas implements ICanvas {
     this.ctx.strokeText(text, x, y + h)
   }
   /**
+   * @private
+   * @param {ISpriteProps} props
+   * @returns
+   * @memberof Canvas
+   */
+  private fillImage(props: ISpriteProps) {
+    let { x, y, w, h, img } = props
+    img.onloadend = () => this.ctx.drawImage(img, x, y, w, h)
+  }
+  /**
+   * @param {number} sx
+   * @param {number} sy
+   * @param {number} sw
+   * @param {number} sh
+   * @returns
+   * @memberof Canvas
+   */
+  getImageData(sx: number, sy: number, sw: number, sh: number) {
+    return this.ctx.getImageData(sx, sy, sw, sh)
+  }
+  /**
    * @param {...INodeProps[]} node
    * @returns {this}
    * @memberof Canvas
@@ -179,17 +220,16 @@ export class Canvas implements ICanvas {
    * @memberof Canvas
    */
   public draw(...label: ILabelProps[]): this
-  public draw(...node: INodeProps[] | ILabelProps[]) {
+  public draw(...sprite: ISpriteProps[]): this
+  public draw(...node: INodeProps[] | ILabelProps[] | ISpriteProps[]): this {
     if (node.length > 0) {
       if (Rules.isLabelPropsArray(node)) {
         node.forEach(l => this.fillLabel(l))
-        return this
-      }
-      if (Rules.isNodePropsArray(node)) {
+      } else if (Rules.isNodePropsArray(node)) {
         node.forEach(n => this.fillNode(n))
-        return this
+      } else if (Rules.isSpritePropsArray(node)) {
+        node.forEach(s => this.fillImage(s))
       }
-      return this
     }
     return this
   }

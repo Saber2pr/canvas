@@ -1,4 +1,4 @@
-import { IRectProps, INodeProps, ILabelProps } from './saber-canvas';
+import { IRectProps, INodeProps, ILabelProps, ISpriteProps } from './saber-canvas';
 /**
  * @export
  * @interface IRect
@@ -25,6 +25,14 @@ export interface ILabel extends ILabelProps {
     setText(text: string): this;
     setFontSize(fontSize: number): this;
     setFontStyle(fontStyle: string): this;
+}
+/**
+ * @export
+ * @interface ISprite
+ * @extends {IRect}
+ */
+export interface ISprite extends ISpriteProps {
+    setSrc(url: string): this;
 }
 /**
  * @export
@@ -118,4 +126,20 @@ export declare class Label extends Node implements ILabel {
      * @memberof Label
      */
     setText(text: string): this;
+}
+/**
+ * @export
+ * @class Sprite
+ * @extends {Rect}
+ */
+export declare class Sprite extends Rect implements ISprite {
+    type: ISprite['type'];
+    img: HTMLImageElement;
+    /**
+     *Creates an instance of Sprite.
+     * @param {string} src
+     * @memberof Sprite
+     */
+    constructor(url: string);
+    setSrc(url: string): this;
 }

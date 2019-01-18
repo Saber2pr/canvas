@@ -9,7 +9,7 @@ export interface IBase {
      * @type {('Rect' | 'Node' | 'Label')}
      * @memberof IBase
      */
-    type: 'Rect' | 'Node' | 'Label';
+    type: 'Rect' | 'Node' | 'Label' | 'Sprite';
 }
 /**
  * @export
@@ -40,6 +40,14 @@ export interface ILabelProps extends INodeProps {
     fontStyle: string;
 }
 /**
+ * @export
+ * @interface ISpriteProps
+ * @extends {IRectProps}
+ */
+export interface ISpriteProps extends IRectProps {
+    img: HTMLImageElement;
+}
+/**
  * Rules
  */
 export declare namespace Rules {
@@ -62,6 +70,14 @@ export declare namespace Rules {
     /**
      * @param obj
      */
+    const isSprite: (obj: any) => obj is ISpriteProps;
+    /**
+     * @param obj
+     */
+    const isSpritePropsArray: (obj: Object[]) => obj is ISpriteProps[];
+    /**
+     * @param obj
+     */
     const isCanvas: (obj: any) => obj is HTMLCanvasElement;
     /**
      * @param obj
@@ -77,7 +93,9 @@ export interface ICanvas {
     clear(): this;
     clear(rect: IRectProps): this;
     draw(...node: INodeProps[]): this;
-    draw(...node: ILabelProps[]): this;
+    draw(...label: ILabelProps[]): this;
+    draw(...sprite: ISpriteProps[]): this;
+    getImageData(sx: number, sy: number, sw: number, sh: number): ImageData;
 }
 /**
  * @export
@@ -124,6 +142,22 @@ export declare class Canvas implements ICanvas {
      */
     private fillLabel;
     /**
+     * @private
+     * @param {ISpriteProps} props
+     * @returns
+     * @memberof Canvas
+     */
+    private fillImage;
+    /**
+     * @param {number} sx
+     * @param {number} sy
+     * @param {number} sw
+     * @param {number} sh
+     * @returns
+     * @memberof Canvas
+     */
+    getImageData(sx: number, sy: number, sw: number, sh: number): ImageData;
+    /**
      * @param {...INodeProps[]} node
      * @returns {this}
      * @memberof Canvas
@@ -135,4 +169,5 @@ export declare class Canvas implements ICanvas {
      * @memberof Canvas
      */
     draw(...label: ILabelProps[]): this;
+    draw(...sprite: ISpriteProps[]): this;
 }
