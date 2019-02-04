@@ -1,3 +1,5 @@
 src/
 lib/test/
 build/
+rollup.config.js
+index.html
