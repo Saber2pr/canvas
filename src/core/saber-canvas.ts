@@ -25,8 +25,8 @@ export interface IBase {
 export interface IRectProps extends IBase {
   x: number
   y: number
-  w: number
-  h: number
+  width: number
+  height: number
 }
 /**
  * @export
@@ -176,8 +176,8 @@ export class Canvas implements ICanvas {
   public clear(rect: IRectProps): this
   public clear(rect?: IRectProps) {
     if (rect) {
-      let { x, y, w, h } = rect
-      this.ctx.clearRect(x, y, w, h)
+      let { x, y, width, height } = rect
+      this.ctx.clearRect(x, y, width, height)
       return this
     }
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
@@ -189,9 +189,9 @@ export class Canvas implements ICanvas {
    * @memberof Canvas
    */
   private fillNode(props: INodeProps) {
-    let { x, y, w, h, color } = props
+    let { x, y, width, height, color } = props
     this.ctx.fillStyle = color
-    this.ctx.fillRect(x, y, w, h)
+    this.ctx.fillRect(x, y, width, height)
   }
   /**
    * @private
@@ -199,10 +199,10 @@ export class Canvas implements ICanvas {
    * @memberof Canvas
    */
   private fillLabel(props: ILabelProps) {
-    let { x, y, h, color, fontSize, fontStyle, text } = props
+    let { x, y, height, color, fontSize, fontStyle, text } = props
     this.ctx.font = String(fontSize) + 'px' + ' ' + fontStyle
     this.ctx.strokeStyle = color
-    this.ctx.strokeText(text, x, y + h)
+    this.ctx.strokeText(text, x, y + height)
   }
   /**
    * @private
@@ -211,8 +211,8 @@ export class Canvas implements ICanvas {
    * @memberof Canvas
    */
   private fillImage(props: ISpriteProps) {
-    let { x, y, w, h, img } = props
-    img.onloadend = () => this.ctx.drawImage(img, x, y, w, h)
+    let { x, y, width, height, img } = props
+    img.onloadend = () => this.ctx.drawImage(img, x, y, width, height)
   }
   /**
    * @param {number} sx

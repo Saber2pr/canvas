@@ -54,8 +54,8 @@ export class Rect implements IRect {
   type: IRect['type']
   x: number
   y: number
-  w: number
-  h: number
+  width: number
+  height: number
   /**
    *Creates an instance of Rect.
    * @param {number} w
@@ -65,8 +65,8 @@ export class Rect implements IRect {
   constructor(w: number, h: number) {
     this.x = 0
     this.y = 0
-    this.w = w
-    this.h = h
+    this.width = w
+    this.height = h
     this.type = 'Rect'
   }
   /**
@@ -81,15 +81,35 @@ export class Rect implements IRect {
     return this
   }
   /**
+   * @returns
+   * @memberof Rect
+   */
+  public getPosition() {
+    return {
+      x: this.x,
+      y: this.y
+    }
+  }
+  /**
    * @param {number} w
    * @param {number} h
    * @returns
    * @memberof Rect
    */
   public setSize(w: number, h: number) {
-    this.w = w
-    this.h = h
+    this.width = w
+    this.height = h
     return this
+  }
+  /**
+   * @returns
+   * @memberof Rect
+   */
+  public getContentSize() {
+    return {
+      width: this.width,
+      height: this.height
+    }
   }
 }
 /**
