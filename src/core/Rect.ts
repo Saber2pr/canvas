@@ -18,8 +18,10 @@ import { Size } from './size'
  * @extends {IRectProps}
  */
 export interface IRect extends IRectProps {
-  setPosition(x: number, y: number): this
+  setPosition(newPosOrX: number | Vec2, y?: number): this
+  getPosition(): Vec2
   setSize(w: number, h: number): this
+  getContentSize(): Size
 }
 /**
  * @export
@@ -77,10 +79,16 @@ export class Rect implements IRect {
    * @returns
    * @memberof Rect
    */
-  public setPosition(x: number, y: number) {
-    this.x = x
-    this.y = y
-    return this
+  public setPosition(newPosOrX: number | Vec2, y?: number) {
+    if (typeof newPosOrX === 'number') {
+      this.x = newPosOrX
+      this.y = y || newPosOrX
+      return this
+    } else {
+      this.x = newPosOrX.x
+      this.y = newPosOrX.y
+      return this
+    }
   }
   /**
    * @returns
