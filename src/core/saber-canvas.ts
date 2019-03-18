@@ -100,6 +100,15 @@ export namespace Rules {
 }
 /**
  * @export
+ * @interface Config
+ */
+export interface Config {
+  elementId: string
+  MaxWidth: number
+  MaxHeight: number
+}
+/**
+ * @export
  * @interface ICanvas
  * @extends {ICanvasProps}
  */
@@ -131,19 +140,27 @@ export class Canvas implements ICanvas {
    * @param {number} MaxHeight
    * @memberof Canvas
    */
-  constructor(elementId: string, MaxWidth: number, MaxHeight: number) {
-    let canvas = document.getElementById(elementId)
-    if (canvas) {
-      if (Rules.isCanvas(canvas)) {
-        canvas.width = MaxWidth
-        canvas.height = MaxHeight
-        let ctx = canvas.getContext('2d')
-        if (Rules.isCtx(ctx)) {
-          this.ctx = ctx
+  constructor(config: Config | string, MaxWidth?: number, MaxHeight?: number) {
+    const ctor = (elementId: string, MaxWidth: number, MaxHeight: number) => {
+      const canvas = document.getElementById(elementId)
+      if (canvas) {
+        if (Rules.isCanvas(canvas)) {
+          canvas.width = MaxWidth
+          canvas.height = MaxHeight
+          let ctx = canvas.getContext('2d')
+          if (Rules.isCtx(ctx)) {
+            this.ctx = ctx
+          }
         }
+      } else {
+        throw 'cannot get canvas element by id: ' + elementId
       }
+    }
+    if (typeof config === 'object') {
+      const { elementId, MaxWidth, MaxHeight } = config
+      ctor(elementId, MaxWidth, MaxHeight)
     } else {
-      throw 'cannot get canvas element by id: ' + elementId
+      ctor(config, MaxWidth, MaxHeight)
     }
   }
   /**
