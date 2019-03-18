@@ -10,6 +10,8 @@ import {
   ILabelProps,
   ISpriteProps
 } from './saber-canvas'
+import { Vec2, v2 } from './vector'
+import { Size } from './size'
 /**
  * @export
  * @interface IRect
@@ -84,11 +86,8 @@ export class Rect implements IRect {
    * @returns
    * @memberof Rect
    */
-  public getPosition() {
-    return {
-      x: this.x,
-      y: this.y
-    }
+  public getPosition(): Vec2 {
+    return v2(this.x, this.y)
   }
   /**
    * @param {number} w
@@ -105,11 +104,8 @@ export class Rect implements IRect {
    * @returns
    * @memberof Rect
    */
-  public getContentSize() {
-    return {
-      width: this.width,
-      height: this.height
-    }
+  public getContentSize(): Size {
+    return new Size(this.width, this.height)
   }
 }
 /**
