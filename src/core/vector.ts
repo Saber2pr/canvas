@@ -10,6 +10,10 @@ export class Vec2 implements v2 {
   }
 }
 
-export function v2(x: number, y: number) {
-  return new Vec2(x, y)
+export function v2(x: v2 | number, y?: number) {
+  if (typeof x === 'object') {
+    return new Vec2(x.x, x.y)
+  } else {
+    return new Vec2(x, y || x)
+  }
 }
