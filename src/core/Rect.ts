@@ -10,7 +10,7 @@ import {
   ILabelProps,
   ISpriteProps
 } from './saber-canvas'
-import { Vec2, v2 } from './vector'
+import { Vec2, v2 } from 'saber-vector'
 import { Size } from './size'
 /**
  * @export
