@@ -82,7 +82,11 @@ export class Rect implements IRect {
   public setPosition(newPosOrX: number | Vec2, y?: number) {
     if (typeof newPosOrX === 'number') {
       this.x = newPosOrX
-      this.y = y || newPosOrX
+      if (typeof y === 'undefined') {
+        this.y = newPosOrX
+      } else {
+        this.y = y
+      }
       return this
     } else {
       this.x = newPosOrX.x
