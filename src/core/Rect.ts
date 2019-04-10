@@ -66,11 +66,11 @@ export class Rect implements IRect {
    * @param {number} h
    * @memberof Rect
    */
-  constructor(w: number, h: number) {
+  constructor(w: number, h?: number) {
     this.x = 0
     this.y = 0
     this.width = w
-    this.height = h
+    this.height = typeof h === 'undefined' ? w : h
     this.type = 'Rect'
   }
   /**
@@ -82,11 +82,7 @@ export class Rect implements IRect {
   public setPosition(newPosOrX: number | Vec2, y?: number) {
     if (typeof newPosOrX === 'number') {
       this.x = newPosOrX
-      if (typeof y === 'undefined') {
-        this.y = newPosOrX
-      } else {
-        this.y = y
-      }
+      this.y = typeof y === 'undefined' ? newPosOrX : y
       return this
     } else {
       this.x = newPosOrX.x
@@ -107,9 +103,9 @@ export class Rect implements IRect {
    * @returns
    * @memberof Rect
    */
-  public setSize(w: number, h: number) {
+  public setSize(w: number, h?: number) {
     this.width = w
-    this.height = h
+    this.height = typeof h === 'undefined' ? w : h
     return this
   }
   /**
@@ -135,8 +131,12 @@ export class Node extends Rect implements INode {
    * @param {number} h
    * @memberof Node
    */
-  constructor(w: number, h: number) {
-    super(w, h)
+  constructor(w: number, h?: number) {
+    if (typeof h === 'undefined') {
+      super(w, w)
+    } else {
+      super(w, h)
+    }
     this.color = '#3a32af'
     this.type = 'Node'
   }

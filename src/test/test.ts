@@ -7,3 +7,10 @@ test_canvas()
 // img.onload = () => {
 //   ctx.drawImage(img, 0, 0, img.width, img.height)
 // }
+import *  as SA from '../index'
+
+SA.Canvas
+SA.Label
+SA.Node
+SA.Rect
+SA.Sprite
