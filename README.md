@@ -10,6 +10,8 @@ npm install saber-canvas
 
 # API
 
+> 关于 Vector2D API 可以参考[saber-vector](https://github.com/Saber2pr/saber-vector)
+
 ## Rect
 
 所有类型的基类
